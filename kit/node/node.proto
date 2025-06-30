@@ -1,0 +1,72 @@
+syntax = "proto3";
+package cloudproud.lunodb.kit.node.v1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/cloudproud/lunodb.pb/kit/node";
+
+enum OperatorStatement {
+  option (gogoproto.goproto_enum_prefix) = false;
+  OperatorUnknown = 0;
+  Where = 1;
+  Limit = 2;
+  Offset = 3;
+  Order = 4;
+  LeftJoin = 5;
+  RightJoin = 6;
+  InnerJoin = 7;
+  OuterJoin = 8;
+  Equal = 9;
+  NotEqual = 10;
+  In = 11;
+  NotIn = 12;
+  GreaterThan = 13;
+  GreaterOrEqualThan = 14;
+  LessThan = 15;
+  LessOrEqualThan = 16;
+  Like = 17;
+  NotLike = 18;
+  ILike = 19;
+  NotILike = 20;
+  RegMatch = 21;
+  NotRegMatch = 22;
+  RegIMatch = 23;
+  NotRegIMatch = 24;
+  IsDistinctFrom = 25;
+  IsNotDistinctFrom = 26;
+  Any = 27;
+  All = 28;
+  Binary = 29;
+}
+
+enum ComparisonType {
+  option (gogoproto.goproto_enum_prefix) = false;
+  UnknownComparisonType = 0;
+  VariableConstant = 1;
+  VariableVariable = 2;
+}
+
+message Operator {
+  OperatorStatement statement = 1;
+  repeated ComparisonType comparison_types = 2;
+}
+
+enum BinaryStatement {
+  option (gogoproto.goproto_enum_prefix) = false;
+  BinaryStatementUnknown = 0;
+  Bitand = 1;
+  Bitor = 2;
+  Bitxor = 3;
+  Plus = 4;
+  Minus = 5;
+  Mult = 6;
+  Div = 7;
+  FloorDiv = 8;
+  Mod = 9;
+  Concat = 10;
+  LShift = 11;
+  RShift = 12;
+  Pow = 13;
+  JSONFetchText = 14;
+  JSONFetchVal = 15;
+}

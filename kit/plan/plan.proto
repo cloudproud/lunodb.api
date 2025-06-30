@@ -1,0 +1,110 @@
+syntax = "proto3";
+package cloudproud.lunodb.kit.plan.v1;
+
+import "gogoproto/gogo.proto";
+import "kit/node/node.proto";
+import "kit/types/types.proto";
+
+option go_package = "github.com/cloudproud/lunodb.pb/kit/plan";
+
+message Node {
+  oneof plan {
+    ColumnNode column = 2;
+    FilterNode filter = 3;
+    FunctionNode function = 4;
+    AggregationNode aggregation = 5;
+    AndExpressionNode and_expression = 7;
+    OrExpressionNode or_expression = 8;
+    ComparisonExpressionNode comparison_expression = 9;
+    BinaryExpressionNode binary_expression = 10;
+    CastExpression cast_expression = 11;
+    ConstantNode constant = 13;
+    TupleNode tupkle = 18;
+    VariableExpression variable = 19;
+    OrderByNode order_by = 20;
+    ParameterNode parameter = 25;
+  }
+}
+
+message ColumnNode {
+  uint64 id = 1 [(gogoproto.customname) = "ID"];
+  string name = 2;
+  string table = 3;
+  string schema = 4;
+  string catalog = 5;
+  Node node = 6;
+  repeated node.v1.Operator operators = 7;
+}
+
+message FilterNode {
+  Node conditions = 1;
+  Node from = 2;
+}
+
+message FunctionNode {
+  repeated Node expressions = 1;
+  string name = 2;
+  bool distinct = 3;
+}
+
+message AggregationNode {
+  Node from = 1;
+  repeated Node group_by = 2;
+  Node having = 3;
+  repeated Node expressions = 4;
+}
+
+message AndExpressionNode {
+  Node left = 1;
+  Node right = 2;
+}
+
+message OrExpressionNode {
+  Node left = 1;
+  Node right = 2;
+}
+
+message BinaryExpressionNode {
+  node.v1.BinaryStatement operator = 1;
+  Node left = 2;
+  Node right = 3;
+}
+
+message CastExpression {
+  types.v1.Type type = 1;
+  Node expression = 2;
+}
+
+message ComparisonExpressionNode {
+  node.v1.OperatorStatement operator = 1;
+  Node left = 2;
+  Node right = 3;
+  node.v1.OperatorStatement sub_operator = 4;
+}
+
+message ConstantNode {
+  types.v1.Type type = 1;
+  bytes value = 2;
+}
+
+message OrderByNode {
+  Node from = 1;
+  repeated OrderExpressionNode expressions = 2;
+}
+
+message OrderExpressionNode {
+  uint32 direction = 1;
+  Node expression = 2;
+}
+
+message TupleNode {
+  repeated Node expressions = 1;
+}
+
+message VariableExpression {
+  uint64 offset = 1;
+}
+
+message ParameterNode {
+  uint32 index = 1;
+}

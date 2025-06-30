@@ -1,0 +1,47 @@
+syntax = "proto3";
+package cloudproud.lunodb.kit.types.v1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/cloudproud/lunodb/services/kit/pkg/types;types";
+
+enum Kind {
+  option (gogoproto.goproto_enum_prefix) = false;
+
+  Any = 0;
+
+  Bool = 1;
+  String = 2;
+
+  Int8 = 3;
+  Int16 = 4;
+  Int32 = 5;
+  Int64 = 6;
+  Uint8 = 7;
+  Uint16 = 8;
+  Uint32 = 9;
+  Uint64 = 10;
+  Float32 = 11;
+  Float64 = 12;
+
+  Array = 13;
+  Object = 14;
+  Tuple = 15;
+
+  Time = 16;
+  Date = 17;
+  Bytes = 18;
+  UUID = 19;
+
+  Timestamp = 20;
+  Inet = 21;
+  Duration = 22;
+
+  Record = 23;
+}
+
+message Type {
+  Kind kind = 1;
+  Type underlying = 2;
+  repeated Type items = 3;
+}

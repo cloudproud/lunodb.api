@@ -1,0 +1,16 @@
+version: v2
+managed:
+  enabled: true
+plugins:
+  - local: protoc-gen-go-grpc
+    out: .
+    opt: paths=source_relative
+  - local: protoc-gen-gogo
+    out: .
+    opt:
+      - paths=source_relative
+      - Mgoogle/protobuf/any.proto=github.com/gogo/protobuf/types
+      - Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types
+      - Mgoogle/protobuf/struct.proto=github.com/gogo/protobuf/types
+      - Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types
+      - Mgoogle/protobuf/wrappers.proto=github.com/gogo/protobuf/types
