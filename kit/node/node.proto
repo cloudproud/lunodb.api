@@ -2,8 +2,23 @@ syntax = "proto3";
 package cloudproud.lunodb.kit.node.v1;
 
 import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+import "kit/types/types.proto";
 
 option go_package = "github.com/cloudproud/lunodb.pb/kit/node";
+
+// Source represents a source configuration which could be used to
+// construct a new source. Sources are used to interact with data sets within a
+// single collection.
+message Source {
+  uint64 uid = 1 [(gogoproto.customname) = "UID"];
+  string namespace = 2;
+  string name = 3;
+  string connector = 4;
+  map<string, string> options = 5;
+  uint32 replication = 6;
+  repeated Table tables = 7;
+}
 
 enum OperatorStatement {
   option (gogoproto.goproto_enum_prefix) = false;
@@ -69,4 +84,42 @@ enum BinaryStatement {
   Pow = 13;
   JSONFetchText = 14;
   JSONFetchVal = 15;
+}
+
+message SourceRef {
+  string name = 1;
+  string table_schema = 3;
+  string table_name = 2;
+}
+
+message Table {
+  oneof ref {
+    SourceRef source = 1;
+  }
+
+  string name = 10;
+  string schema = 11;
+  string catalog = 12;
+  bool schemaless = 13;
+  repeated Column columns = 14;
+  string connector = 15;
+  repeated Operator operators = 16;
+}
+
+message Catalog {
+  uint64 uid = 1 [(gogoproto.customname) = "UID"];
+  string namespace = 2;
+  string name = 3;
+  string description = 4;
+  repeated string labels = 5;
+  repeated Table tables = 6;
+  bool hidden = 7;
+}
+
+message Column {
+  string name = 3;
+  types.v1.Type type = 4;
+  bool indexed = 5;
+  bool nullable = 6;
+  repeated Operator operators = 7;
 }
