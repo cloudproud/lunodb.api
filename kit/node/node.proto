@@ -14,7 +14,7 @@ message Source {
   uint64 uid = 1 [(gogoproto.customname) = "UID"];
   string namespace = 2;
   string name = 3;
-  string connector = 4;
+  reserved 4;
   map<string, string> options = 5;
   uint32 replication = 6;
   repeated Table tables = 7;
