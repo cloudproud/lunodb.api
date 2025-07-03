@@ -19,7 +19,7 @@ message Node {
     BinaryExpressionNode binary_expression = 10;
     CastExpression cast_expression = 11;
     ConstantNode constant = 13;
-    TupleNode tupkle = 18;
+    TupleNode tuple = 18;
     VariableExpression variable = 19;
     OrderByNode order_by = 20;
     ParameterNode parameter = 25;
