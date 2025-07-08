@@ -42,17 +42,10 @@ message Column {
 
 message FilterExpression {
   oneof condition {
-    Column column = 1;
-    Function function = 2;
-    BinaryExpression binary_expression = 3;
-    Constant constant = 4;
-    Tuple tuple = 5;
-    VariableExpression variable = 6;
-    Parameter parameter = 7;
-    CastExpression cast_expression = 8;
-    AndExpression and_expression = 9;
-    OrExpression or_expression = 10;
-    ComparisonExpression comparison_expression = 11;
+    Expression expression = 1;
+    AndExpression and_expression = 2;
+    OrExpression or_expression = 3;
+    ComparisonExpression comparison_expression = 4;
   }
 }
 
