@@ -64,6 +64,7 @@ enum ComparisonType {
 message Operator {
   OperatorStatement statement = 1;
   repeated ComparisonType comparison_types = 2;
+  bool required = 3;
 }
 
 enum BinaryStatement {
