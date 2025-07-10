@@ -3,7 +3,7 @@ package cloudproud.lunodb.kit.types.v1;
 
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/cloudproud/lunodb.pb/kit/types;types";
+option go_package = "github.com/cloudproud/lunodb.pb/proto/kit/types;types";
 
 enum Kind {
   option (gogoproto.goproto_enum_prefix) = false;
