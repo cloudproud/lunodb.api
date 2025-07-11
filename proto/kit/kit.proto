@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package cloudproud.lunodb.kit.v1;
+
+import "proto/kit/node/node.proto";
+import "proto/kit/plan/plan.proto";
+import "proto/kit/types/types.proto";
+
+option go_package = "github.com/cloudproud/lunodb.pb/proto/kit";
+
+service Service {
+  rpc Connector(stream ConnectorResponse) returns (stream ConnectorRequest) {}
+}
+
+message Empty {}
+
+message ConnectorResponse {
+  oneof state {
+    PingResponse ping = 1;
+    FetchResponse fetch = 2;
+    ExecuteStatementResponse execute_statement = 3;
+  }
+}
+
+message ConnectorRequest {
+  oneof state {
+    PingRequest ping = 1;
+    FetchRequest fetch = 2;
+    ExecuteStatementRequest execute_statement = 3;
+  }
+}
+
+message Header {
+  repeated Column columns = 1;
+}
+
+message Column {
+  string name = 1;
+  types.v1.Type type = 2;
+}
+
+message Row {
+  repeated bytes values = 1;
+}
+
+message Error {
+  string message = 1;
+}
+
+message PingRequest {}
+
+message PingResponse {
+  Error error = 1;
+}
+
+message FetchRequest {}
+
+message FetchResponse {
+  repeated node.v1.Table tables = 1;
+}
+
+message ExecuteStatementRequest {
+  connector.plan.v1.Literal plan = 1;
+}
+
+message ExecuteStatementResponse {
+  oneof result {
+    Header header = 1;
+    Row data = 2;
+    Error error = 3;
+    Empty EOE = 4; // NOTE: end of executable
+  }
+}
