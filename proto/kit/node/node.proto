@@ -7,19 +7,6 @@ import "proto/kit/types/types.proto";
 
 option go_package = "github.com/cloudproud/lunodb.pb/proto/kit/node";
 
-// Source represents a source configuration which could be used to
-// construct a new source. Sources are used to interact with data sets within a
-// single collection.
-message Source {
-  uint64 uid = 1 [(gogoproto.customname) = "UID"];
-  string namespace = 2;
-  string name = 3;
-  reserved 4;
-  map<string, string> options = 5;
-  uint32 replication = 6;
-  repeated Table tables = 7;
-}
-
 enum OperatorStatement {
   option (gogoproto.goproto_enum_prefix) = false;
   OperatorUnknown = 0;
