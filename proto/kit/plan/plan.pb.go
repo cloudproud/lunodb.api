@@ -5,7 +5,7 @@ package plan
 
 import (
 	fmt "fmt"
-	node "github.com/cloudproud/lunodb.pb/proto/kit/node"
+	node "github.com/cloudproud/lunodb.api/proto/kit/node"
 	types "github.com/cloudproud/lunodb.pb/proto/kit/types"
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
