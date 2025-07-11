@@ -87,17 +87,7 @@ enum BinaryStatement {
   JSONFetchVal = 15;
 }
 
-message SourceRef {
-  string name = 1;
-  string table_schema = 3;
-  string table_name = 2;
-}
-
 message Table {
-  oneof ref {
-    SourceRef source = 1;
-  }
-
   string name = 10;
   string schema = 11;
   string catalog = 12;
