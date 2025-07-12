@@ -1,11 +1,11 @@
 syntax = "proto3";
-package cloudproud.lunodb.kit.node.v1;
+package cloudproud.lunodb.node.v1;
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
-import "proto/kit/types/types.proto";
+import "proto/types/types.proto";
 
-option go_package = "github.com/cloudproud/lunodb.api/proto/kit/node";
+option go_package = "github.com/cloudproud/lunodb.api/proto/node";
 
 enum OperatorStatement {
   option (gogoproto.goproto_enum_prefix) = false;

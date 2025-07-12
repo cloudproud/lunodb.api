@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             (unknown)
-// source: proto/kit/kit.proto
+// source: proto/lunodb.proto
 
-package kit
+package proto
 
 import (
 	context "context"
@@ -19,7 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Service_Connector_FullMethodName = "/cloudproud.lunodb.kit.v1.Service/Connector"
+	Service_Connector_FullMethodName = "/cloudproud.lunodb.v1.Service/Connector"
 )
 
 // ServiceClient is the client API for Service service.
@@ -100,7 +100,7 @@ type Service_ConnectorServer = grpc.BidiStreamingServer[ConnectorResponse, Conne
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Service_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "cloudproud.lunodb.kit.v1.Service",
+	ServiceName: "cloudproud.lunodb.v1.Service",
 	HandlerType: (*ServiceServer)(nil),
 	Methods:     []grpc.MethodDesc{},
 	Streams: []grpc.StreamDesc{
@@ -111,5 +111,5 @@ var Service_ServiceDesc = grpc.ServiceDesc{
 			ClientStreams: true,
 		},
 	},
-	Metadata: "proto/kit/kit.proto",
+	Metadata: "proto/lunodb.proto",
 }

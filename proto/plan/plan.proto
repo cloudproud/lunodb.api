@@ -1,11 +1,11 @@
 syntax = "proto3";
-package cloudproud.lunodb.kit.connector.plan.v1;
+package cloudproud.lunodb.connector.plan.v1;
 
 import "gogoproto/gogo.proto";
-import "proto/kit/node/node.proto";
-import "proto/kit/types/types.proto";
+import "proto/node/node.proto";
+import "proto/types/types.proto";
 
-option go_package = "github.com/cloudproud/lunodb.pb/proto/kit/plan";
+option go_package = "github.com/cloudproud/lunodb.pb/proto/plan";
 
 message Literal {
   repeated Expression columns = 1;

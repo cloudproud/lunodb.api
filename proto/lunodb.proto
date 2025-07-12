@@ -1,12 +1,12 @@
 syntax = "proto3";
 
-package cloudproud.lunodb.kit.v1;
+package cloudproud.lunodb.v1;
 
-import "proto/kit/node/node.proto";
-import "proto/kit/plan/plan.proto";
-import "proto/kit/types/types.proto";
+import "proto/node/node.proto";
+import "proto/plan/plan.proto";
+import "proto/types/types.proto";
 
-option go_package = "github.com/cloudproud/lunodb.pb/proto/kit";
+option go_package = "github.com/cloudproud/lunodb.pb/proto";
 
 service Service {
   rpc Connector(stream ConnectorResponse) returns (stream ConnectorRequest) {}
