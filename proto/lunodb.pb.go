@@ -6,8 +6,8 @@ package proto
 import (
 	fmt "fmt"
 	node "github.com/cloudproud/lunodb.api/proto/node"
-	plan "github.com/cloudproud/lunodb.pb/proto/plan"
-	types "github.com/cloudproud/lunodb.pb/proto/types"
+	plan "github.com/cloudproud/lunodb.api/proto/plan"
+	types "github.com/cloudproud/lunodb.api/proto/types"
 	proto "github.com/gogo/protobuf/proto"
 	math "math"
 )

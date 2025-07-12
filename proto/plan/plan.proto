@@ -5,7 +5,7 @@ import "gogoproto/gogo.proto";
 import "proto/node/node.proto";
 import "proto/types/types.proto";
 
-option go_package = "github.com/cloudproud/lunodb.pb/proto/plan";
+option go_package = "github.com/cloudproud/lunodb.api/proto/plan";
 
 message Literal {
   repeated Expression columns = 1;

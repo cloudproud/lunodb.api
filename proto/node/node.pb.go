@@ -5,7 +5,7 @@ package node
 
 import (
 	fmt "fmt"
-	types "github.com/cloudproud/lunodb.pb/proto/types"
+	types "github.com/cloudproud/lunodb.api/proto/types"
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
 	_ "github.com/gogo/protobuf/types"
