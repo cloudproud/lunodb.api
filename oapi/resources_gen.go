@@ -12,9 +12,11 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/oapi-codegen/runtime"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 const (
@@ -27,28 +29,6 @@ const (
 	Integer  ConnectorOptionType = "integer"
 	Password ConnectorOptionType = "password"
 	String   ConnectorOptionType = "string"
-)
-
-// Defines values for Operator.
-const (
-	OperatorAND              Operator = "AND"
-	OperatorEmpty            Operator = "!="
-	OperatorEqual            Operator = "="
-	OperatorGreaterThan      Operator = ">"
-	OperatorGreaterThanEqual Operator = ">="
-	OperatorILIKE            Operator = "ILIKE"
-	OperatorIN               Operator = "IN"
-	OperatorLIKE             Operator = "LIKE"
-	OperatorLessThan         Operator = "<"
-	OperatorLessThanEqual    Operator = "<="
-	OperatorNOT              Operator = "NOT"
-	OperatorOR               Operator = "OR"
-)
-
-// Defines values for PolicyType.
-const (
-	Comparison PolicyType = "comparison"
-	Logical    PolicyType = "logical"
 )
 
 // Defines values for QueryParamsLimit.
@@ -91,7 +71,6 @@ type Column struct {
 // Connector defines model for Connector.
 type Connector struct {
 	Description string              `json:"description"`
-	Enterprise  bool                `json:"enterprise"`
 	Id          string              `json:"id"`
 	Name        string              `json:"name"`
 	Options     [][]ConnectorOption `json:"options"`
@@ -126,6 +105,28 @@ type Explain struct {
 	Planning int `json:"planning"`
 }
 
+// Key defines model for Key.
+type Key struct {
+	CreatedAt time.Time          `json:"created_at"`
+	CreatedBy openapi_types.UUID `json:"created_by"`
+
+	// Description Human-readable description
+	Description *string `json:"description,omitempty"`
+
+	// ExpiresAt Optional expiration timestamp
+	ExpiresAt *time.Time `json:"expires_at"`
+
+	// Id Unique identifier of the key
+	Id       openapi_types.UUID `json:"id"`
+	Policies []Policy           `json:"policies"`
+
+	// Secret The API secret (only returned at creation time)
+	Secret *string `json:"secret,omitempty"`
+}
+
+// Keys defines model for Keys.
+type Keys = []Key
+
 // NewSource defines model for NewSource.
 type NewSource struct {
 	// Connector represents the connector name used to connect with the given source
@@ -137,34 +138,11 @@ type NewSource struct {
 	Options      SourceOptions `json:"options"`
 }
 
-// Operator A comparison or logical operator.
-// - Comparison: =, !=, >, <, >=, <=, LIKE, ILIKE, IN
-// - Logical: AND, OR, NOT
-type Operator string
-
 // Policy defines model for Policy.
 type Policy struct {
-	// Column The column name being filtered (only for comparison type)
-	Column *string `json:"column,omitempty"`
-
-	// Conditions List of nested policies (only for logical type)
-	Conditions *[]Policy `json:"conditions,omitempty"`
-
-	// Operator A comparison or logical operator.
-	// - Comparison: =, !=, >, <, >=, <=, LIKE, ILIKE, IN
-	// - Logical: AND, OR, NOT
-	Operator *Operator `json:"operator,omitempty"`
-
-	// Required Whether this policy must be fulfilled (e.g., tenant ID isolation)
-	Required *bool `json:"required,omitempty"`
-
-	// Type The kind of policy expression.
-	Type  PolicyType `json:"type"`
-	Value *Value     `json:"value,omitempty"`
+	Permissions *[]string `json:"permissions,omitempty"`
+	Resources   []string  `json:"resources"`
 }
-
-// PolicyType The kind of policy expression.
-type PolicyType string
 
 // Problem defines model for Problem.
 type Problem struct {
@@ -251,46 +229,6 @@ type Table struct {
 // Tables defines model for Tables.
 type Tables = []Table
 
-// Value defines model for Value.
-type Value struct {
-	// Literal A static value (string, number, boolean, etc.)
-	Literal *Value_Literal `json:"literal,omitempty"`
-
-	// Placeholder A runtime-resolved variable, like `$userId`
-	Placeholder *string `json:"placeholder,omitempty"`
-}
-
-// ValueLiteral0 defines model for .
-type ValueLiteral0 = string
-
-// ValueLiteral1 defines model for .
-type ValueLiteral1 = float32
-
-// ValueLiteral2 defines model for .
-type ValueLiteral2 = bool
-
-// ValueLiteral3 defines model for .
-type ValueLiteral3 = []Value_Literal_3_Item
-
-// ValueLiteral30 defines model for .
-type ValueLiteral30 = string
-
-// ValueLiteral31 defines model for .
-type ValueLiteral31 = float32
-
-// ValueLiteral32 defines model for .
-type ValueLiteral32 = bool
-
-// Value_Literal_3_Item defines model for Value.Literal.3.Item.
-type Value_Literal_3_Item struct {
-	union json.RawMessage
-}
-
-// Value_Literal A static value (string, number, boolean, etc.)
-type Value_Literal struct {
-	union json.RawMessage
-}
-
 // QueryParams defines parameters for Query.
 type QueryParams struct {
 	// Statements SQL query statements to be executed
@@ -321,213 +259,17 @@ type SetCatalogJSONRequestBody = SetCatalog
 // UpdateCatalogJSONRequestBody defines body for UpdateCatalog for application/json ContentType.
 type UpdateCatalogJSONRequestBody = SetCatalog
 
+// NewConnectorJSONRequestBody defines body for NewConnector for application/json ContentType.
+type NewConnectorJSONRequestBody = Connector
+
+// NewKeyJSONRequestBody defines body for NewKey for application/json ContentType.
+type NewKeyJSONRequestBody = Key
+
 // NewSourceJSONRequestBody defines body for NewSource for application/json ContentType.
 type NewSourceJSONRequestBody = NewSource
 
 // TestSourceConnectionJSONRequestBody defines body for TestSourceConnection for application/json ContentType.
 type TestSourceConnectionJSONRequestBody = NewSource
-
-// AsValueLiteral30 returns the union data inside the Value_Literal_3_Item as a ValueLiteral30
-func (t Value_Literal_3_Item) AsValueLiteral30() (ValueLiteral30, error) {
-	var body ValueLiteral30
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromValueLiteral30 overwrites any union data inside the Value_Literal_3_Item as the provided ValueLiteral30
-func (t *Value_Literal_3_Item) FromValueLiteral30(v ValueLiteral30) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeValueLiteral30 performs a merge with any union data inside the Value_Literal_3_Item, using the provided ValueLiteral30
-func (t *Value_Literal_3_Item) MergeValueLiteral30(v ValueLiteral30) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsValueLiteral31 returns the union data inside the Value_Literal_3_Item as a ValueLiteral31
-func (t Value_Literal_3_Item) AsValueLiteral31() (ValueLiteral31, error) {
-	var body ValueLiteral31
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromValueLiteral31 overwrites any union data inside the Value_Literal_3_Item as the provided ValueLiteral31
-func (t *Value_Literal_3_Item) FromValueLiteral31(v ValueLiteral31) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeValueLiteral31 performs a merge with any union data inside the Value_Literal_3_Item, using the provided ValueLiteral31
-func (t *Value_Literal_3_Item) MergeValueLiteral31(v ValueLiteral31) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsValueLiteral32 returns the union data inside the Value_Literal_3_Item as a ValueLiteral32
-func (t Value_Literal_3_Item) AsValueLiteral32() (ValueLiteral32, error) {
-	var body ValueLiteral32
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromValueLiteral32 overwrites any union data inside the Value_Literal_3_Item as the provided ValueLiteral32
-func (t *Value_Literal_3_Item) FromValueLiteral32(v ValueLiteral32) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeValueLiteral32 performs a merge with any union data inside the Value_Literal_3_Item, using the provided ValueLiteral32
-func (t *Value_Literal_3_Item) MergeValueLiteral32(v ValueLiteral32) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t Value_Literal_3_Item) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *Value_Literal_3_Item) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsValueLiteral0 returns the union data inside the Value_Literal as a ValueLiteral0
-func (t Value_Literal) AsValueLiteral0() (ValueLiteral0, error) {
-	var body ValueLiteral0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromValueLiteral0 overwrites any union data inside the Value_Literal as the provided ValueLiteral0
-func (t *Value_Literal) FromValueLiteral0(v ValueLiteral0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeValueLiteral0 performs a merge with any union data inside the Value_Literal, using the provided ValueLiteral0
-func (t *Value_Literal) MergeValueLiteral0(v ValueLiteral0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsValueLiteral1 returns the union data inside the Value_Literal as a ValueLiteral1
-func (t Value_Literal) AsValueLiteral1() (ValueLiteral1, error) {
-	var body ValueLiteral1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromValueLiteral1 overwrites any union data inside the Value_Literal as the provided ValueLiteral1
-func (t *Value_Literal) FromValueLiteral1(v ValueLiteral1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeValueLiteral1 performs a merge with any union data inside the Value_Literal, using the provided ValueLiteral1
-func (t *Value_Literal) MergeValueLiteral1(v ValueLiteral1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsValueLiteral2 returns the union data inside the Value_Literal as a ValueLiteral2
-func (t Value_Literal) AsValueLiteral2() (ValueLiteral2, error) {
-	var body ValueLiteral2
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromValueLiteral2 overwrites any union data inside the Value_Literal as the provided ValueLiteral2
-func (t *Value_Literal) FromValueLiteral2(v ValueLiteral2) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeValueLiteral2 performs a merge with any union data inside the Value_Literal, using the provided ValueLiteral2
-func (t *Value_Literal) MergeValueLiteral2(v ValueLiteral2) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsValueLiteral3 returns the union data inside the Value_Literal as a ValueLiteral3
-func (t Value_Literal) AsValueLiteral3() (ValueLiteral3, error) {
-	var body ValueLiteral3
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromValueLiteral3 overwrites any union data inside the Value_Literal as the provided ValueLiteral3
-func (t *Value_Literal) FromValueLiteral3(v ValueLiteral3) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeValueLiteral3 performs a merge with any union data inside the Value_Literal, using the provided ValueLiteral3
-func (t *Value_Literal) MergeValueLiteral3(v ValueLiteral3) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t Value_Literal) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *Value_Literal) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
 
 // RequestEditorFn  is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
@@ -623,6 +365,22 @@ type ClientInterface interface {
 
 	// GetCatalogs request
 	GetCatalogs(ctx context.Context, namespace string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// NewConnectorWithBody request with any body
+	NewConnectorWithBody(ctx context.Context, namespace string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	NewConnector(ctx context.Context, namespace string, body NewConnectorJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteKey request
+	DeleteKey(ctx context.Context, namespace string, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetKey request
+	GetKey(ctx context.Context, namespace string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// NewKeyWithBody request with any body
+	NewKeyWithBody(ctx context.Context, namespace string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	NewKey(ctx context.Context, namespace string, body NewKeyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// Query request
 	Query(ctx context.Context, namespace string, params *QueryParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -739,6 +497,78 @@ func (c *Client) UpdateCatalog(ctx context.Context, namespace string, catalog st
 
 func (c *Client) GetCatalogs(ctx context.Context, namespace string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetCatalogsRequest(c.Server, namespace)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) NewConnectorWithBody(ctx context.Context, namespace string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewNewConnectorRequestWithBody(c.Server, namespace, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) NewConnector(ctx context.Context, namespace string, body NewConnectorJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewNewConnectorRequest(c.Server, namespace, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteKey(ctx context.Context, namespace string, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteKeyRequest(c.Server, namespace, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetKey(ctx context.Context, namespace string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetKeyRequest(c.Server, namespace)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) NewKeyWithBody(ctx context.Context, namespace string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewNewKeyRequestWithBody(c.Server, namespace, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) NewKey(ctx context.Context, namespace string, body NewKeyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewNewKeyRequest(c.Server, namespace, body)
 	if err != nil {
 		return nil, err
 	}
@@ -1109,6 +939,175 @@ func NewGetCatalogsRequest(server string, namespace string) (*http.Request, erro
 	if err != nil {
 		return nil, err
 	}
+
+	return req, nil
+}
+
+// NewNewConnectorRequest calls the generic NewConnector builder with application/json body
+func NewNewConnectorRequest(server string, namespace string, body NewConnectorJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewNewConnectorRequestWithBody(server, namespace, "application/json", bodyReader)
+}
+
+// NewNewConnectorRequestWithBody generates requests for NewConnector with any type of body
+func NewNewConnectorRequestWithBody(server string, namespace string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "namespace", runtime.ParamLocationPath, namespace)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/namespace/%s/connector", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteKeyRequest generates requests for DeleteKey
+func NewDeleteKeyRequest(server string, namespace string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "namespace", runtime.ParamLocationPath, namespace)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/namespace/%s/key/%s/revoke", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetKeyRequest generates requests for GetKey
+func NewGetKeyRequest(server string, namespace string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "namespace", runtime.ParamLocationPath, namespace)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/namespace/%s/keys", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewNewKeyRequest calls the generic NewKey builder with application/json body
+func NewNewKeyRequest(server string, namespace string, body NewKeyJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewNewKeyRequestWithBody(server, namespace, "application/json", bodyReader)
+}
+
+// NewNewKeyRequestWithBody generates requests for NewKey with any type of body
+func NewNewKeyRequestWithBody(server string, namespace string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "namespace", runtime.ParamLocationPath, namespace)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/namespace/%s/keys", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
 
 	return req, nil
 }
@@ -1584,6 +1583,22 @@ type ClientWithResponsesInterface interface {
 	// GetCatalogsWithResponse request
 	GetCatalogsWithResponse(ctx context.Context, namespace string, reqEditors ...RequestEditorFn) (*GetCatalogsResponse, error)
 
+	// NewConnectorWithBodyWithResponse request with any body
+	NewConnectorWithBodyWithResponse(ctx context.Context, namespace string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*NewConnectorResponse, error)
+
+	NewConnectorWithResponse(ctx context.Context, namespace string, body NewConnectorJSONRequestBody, reqEditors ...RequestEditorFn) (*NewConnectorResponse, error)
+
+	// DeleteKeyWithResponse request
+	DeleteKeyWithResponse(ctx context.Context, namespace string, id string, reqEditors ...RequestEditorFn) (*DeleteKeyResponse, error)
+
+	// GetKeyWithResponse request
+	GetKeyWithResponse(ctx context.Context, namespace string, reqEditors ...RequestEditorFn) (*GetKeyResponse, error)
+
+	// NewKeyWithBodyWithResponse request with any body
+	NewKeyWithBodyWithResponse(ctx context.Context, namespace string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*NewKeyResponse, error)
+
+	NewKeyWithResponse(ctx context.Context, namespace string, body NewKeyJSONRequestBody, reqEditors ...RequestEditorFn) (*NewKeyResponse, error)
+
 	// QueryWithResponse request
 	QueryWithResponse(ctx context.Context, namespace string, params *QueryParams, reqEditors ...RequestEditorFn) (*QueryResponse, error)
 
@@ -1708,7 +1723,7 @@ type UpdateCatalogResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON201      *Catalog
-	JSON400      *Problem
+	JSON401      *Problem
 }
 
 // Status returns HTTPResponse.Status
@@ -1731,6 +1746,7 @@ type GetCatalogsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *Catalogs
+	JSON401      *Problem
 }
 
 // Status returns HTTPResponse.Status
@@ -1743,6 +1759,97 @@ func (r GetCatalogsResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetCatalogsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type NewConnectorResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *Connector
+	JSON401      *Problem
+}
+
+// Status returns HTTPResponse.Status
+func (r NewConnectorResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r NewConnectorResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteKeyResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON401      *Problem
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteKeyResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteKeyResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetKeyResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Keys
+	JSON401      *Problem
+}
+
+// Status returns HTTPResponse.Status
+func (r GetKeyResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetKeyResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type NewKeyResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *Key
+	JSON401      *Problem
+}
+
+// Status returns HTTPResponse.Status
+func (r NewKeyResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r NewKeyResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -2005,6 +2112,58 @@ func (c *ClientWithResponses) GetCatalogsWithResponse(ctx context.Context, names
 	return ParseGetCatalogsResponse(rsp)
 }
 
+// NewConnectorWithBodyWithResponse request with arbitrary body returning *NewConnectorResponse
+func (c *ClientWithResponses) NewConnectorWithBodyWithResponse(ctx context.Context, namespace string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*NewConnectorResponse, error) {
+	rsp, err := c.NewConnectorWithBody(ctx, namespace, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseNewConnectorResponse(rsp)
+}
+
+func (c *ClientWithResponses) NewConnectorWithResponse(ctx context.Context, namespace string, body NewConnectorJSONRequestBody, reqEditors ...RequestEditorFn) (*NewConnectorResponse, error) {
+	rsp, err := c.NewConnector(ctx, namespace, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseNewConnectorResponse(rsp)
+}
+
+// DeleteKeyWithResponse request returning *DeleteKeyResponse
+func (c *ClientWithResponses) DeleteKeyWithResponse(ctx context.Context, namespace string, id string, reqEditors ...RequestEditorFn) (*DeleteKeyResponse, error) {
+	rsp, err := c.DeleteKey(ctx, namespace, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteKeyResponse(rsp)
+}
+
+// GetKeyWithResponse request returning *GetKeyResponse
+func (c *ClientWithResponses) GetKeyWithResponse(ctx context.Context, namespace string, reqEditors ...RequestEditorFn) (*GetKeyResponse, error) {
+	rsp, err := c.GetKey(ctx, namespace, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetKeyResponse(rsp)
+}
+
+// NewKeyWithBodyWithResponse request with arbitrary body returning *NewKeyResponse
+func (c *ClientWithResponses) NewKeyWithBodyWithResponse(ctx context.Context, namespace string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*NewKeyResponse, error) {
+	rsp, err := c.NewKeyWithBody(ctx, namespace, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseNewKeyResponse(rsp)
+}
+
+func (c *ClientWithResponses) NewKeyWithResponse(ctx context.Context, namespace string, body NewKeyJSONRequestBody, reqEditors ...RequestEditorFn) (*NewKeyResponse, error) {
+	rsp, err := c.NewKey(ctx, namespace, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseNewKeyResponse(rsp)
+}
+
 // QueryWithResponse request returning *QueryResponse
 func (c *ClientWithResponses) QueryWithResponse(ctx context.Context, namespace string, params *QueryParams, reqEditors ...RequestEditorFn) (*QueryResponse, error) {
 	rsp, err := c.Query(ctx, namespace, params, reqEditors...)
@@ -2239,12 +2398,12 @@ func ParseUpdateCatalogResponse(rsp *http.Response) (*UpdateCatalogResponse, err
 		}
 		response.JSON201 = &dest
 
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
 		var dest Problem
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
-		response.JSON400 = &dest
+		response.JSON401 = &dest
 
 	}
 
@@ -2271,6 +2430,138 @@ func ParseGetCatalogsResponse(rsp *http.Response) (*GetCatalogsResponse, error) 
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Problem
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseNewConnectorResponse parses an HTTP response from a NewConnectorWithResponse call
+func ParseNewConnectorResponse(rsp *http.Response) (*NewConnectorResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &NewConnectorResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest Connector
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Problem
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteKeyResponse parses an HTTP response from a DeleteKeyWithResponse call
+func ParseDeleteKeyResponse(rsp *http.Response) (*DeleteKeyResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteKeyResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Problem
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetKeyResponse parses an HTTP response from a GetKeyWithResponse call
+func ParseGetKeyResponse(rsp *http.Response) (*GetKeyResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetKeyResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Keys
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Problem
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseNewKeyResponse parses an HTTP response from a NewKeyWithResponse call
+func ParseNewKeyResponse(rsp *http.Response) (*NewKeyResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &NewKeyResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest Key
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Problem
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
 
 	}
 
@@ -2578,6 +2869,18 @@ type ServerInterface interface {
 	// Fetch all data catalogs
 	// (GET /v1/namespace/{namespace}/catalogs)
 	GetCatalogs(w http.ResponseWriter, r *http.Request, namespace string)
+	// Register a new connector
+	// (POST /v1/namespace/{namespace}/connector)
+	NewConnector(w http.ResponseWriter, r *http.Request, namespace string)
+	// Revoke the given key
+	// (DELETE /v1/namespace/{namespace}/key/{id}/revoke)
+	DeleteKey(w http.ResponseWriter, r *http.Request, namespace string, id string)
+	// Fetch all API keys
+	// (GET /v1/namespace/{namespace}/keys)
+	GetKey(w http.ResponseWriter, r *http.Request, namespace string)
+	// Register a new API key
+	// (POST /v1/namespace/{namespace}/keys)
+	NewKey(w http.ResponseWriter, r *http.Request, namespace string)
 	// Interact with the data catalogs through SQL
 	// (GET /v1/namespace/{namespace}/query)
 	Query(w http.ResponseWriter, r *http.Request, namespace string, params QueryParams)
@@ -2641,6 +2944,30 @@ func (_ Unimplemented) UpdateCatalog(w http.ResponseWriter, r *http.Request, nam
 // Fetch all data catalogs
 // (GET /v1/namespace/{namespace}/catalogs)
 func (_ Unimplemented) GetCatalogs(w http.ResponseWriter, r *http.Request, namespace string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Register a new connector
+// (POST /v1/namespace/{namespace}/connector)
+func (_ Unimplemented) NewConnector(w http.ResponseWriter, r *http.Request, namespace string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Revoke the given key
+// (DELETE /v1/namespace/{namespace}/key/{id}/revoke)
+func (_ Unimplemented) DeleteKey(w http.ResponseWriter, r *http.Request, namespace string, id string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Fetch all API keys
+// (GET /v1/namespace/{namespace}/keys)
+func (_ Unimplemented) GetKey(w http.ResponseWriter, r *http.Request, namespace string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Register a new API key
+// (POST /v1/namespace/{namespace}/keys)
+func (_ Unimplemented) NewKey(w http.ResponseWriter, r *http.Request, namespace string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -2894,6 +3221,139 @@ func (siw *ServerInterfaceWrapper) GetCatalogs(w http.ResponseWriter, r *http.Re
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetCatalogs(w, r, namespace)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// NewConnector operation middleware
+func (siw *ServerInterfaceWrapper) NewConnector(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "namespace" -------------
+	var namespace string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "namespace", chi.URLParam(r, "namespace"), &namespace, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "namespace", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.NewConnector(w, r, namespace)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteKey operation middleware
+func (siw *ServerInterfaceWrapper) DeleteKey(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "namespace" -------------
+	var namespace string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "namespace", chi.URLParam(r, "namespace"), &namespace, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "namespace", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteKey(w, r, namespace, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetKey operation middleware
+func (siw *ServerInterfaceWrapper) GetKey(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "namespace" -------------
+	var namespace string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "namespace", chi.URLParam(r, "namespace"), &namespace, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "namespace", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetKey(w, r, namespace)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// NewKey operation middleware
+func (siw *ServerInterfaceWrapper) NewKey(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "namespace" -------------
+	var namespace string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "namespace", chi.URLParam(r, "namespace"), &namespace, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "namespace", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.NewKey(w, r, namespace)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -3384,6 +3844,18 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/v1/namespace/{namespace}/catalogs", wrapper.GetCatalogs)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/namespace/{namespace}/connector", wrapper.NewConnector)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/v1/namespace/{namespace}/key/{id}/revoke", wrapper.DeleteKey)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/namespace/{namespace}/keys", wrapper.GetKey)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/namespace/{namespace}/keys", wrapper.NewKey)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/v1/namespace/{namespace}/query", wrapper.Query)
