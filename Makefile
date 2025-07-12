@@ -57,6 +57,7 @@ fmt: | $(EMBEDDED) ; $(info $(M) running fmt…) @ ## Format all source files
 .PHONY: generate
 generate: | $(EMBEDDED) $(TOOLCHAIN) ; $(info $(M) running generate…) @ ## Generate all source files
 	$Q $(BUF) generate -v .
+	$Q $(GO) generate ./...
 	$Q $(MAKE) fmt
 
 .PHONY: clean
