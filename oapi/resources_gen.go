@@ -209,7 +209,8 @@ type SourceOptions map[string]string
 
 // SourceRef defines model for SourceRef.
 type SourceRef struct {
-	Name string `json:"name"`
+	Name  string   `json:"name"`
+	Table TableRef `json:"table"`
 }
 
 // Sources defines model for Sources.
@@ -222,6 +223,15 @@ type Table struct {
 	Name       string   `json:"name"`
 	Schema     string   `json:"schema"`
 	Schemaless bool     `json:"schemaless"`
+}
+
+// TableRef defines model for TableRef.
+type TableRef struct {
+	// Name the table name referenced within SQL queries
+	Name string `json:"name"`
+
+	// Schema the table schema referenced within SQL queries
+	Schema string `json:"schema"`
 }
 
 // Tables defines model for Tables.

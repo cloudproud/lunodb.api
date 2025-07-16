@@ -867,9 +867,25 @@ components:
       type: object
       required:
         - name
+        - table
       properties:
         name:
           type: string
+        table:
+          $ref: "#/components/schemas/TableRef"
+    TableRef:
+      type: object
+      required:
+        - name
+        - schema
+      properties:
+        name:
+          type: string
+          description: the table name referenced within SQL queries
+        schema:
+          type: string
+          default: public
+          description: the table schema referenced within SQL queries
     Connectors:
       type: array
       items:
