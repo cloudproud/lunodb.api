@@ -209,9 +209,7 @@ type SourceOptions map[string]string
 
 // SourceRef defines model for SourceRef.
 type SourceRef struct {
-	Name   string `json:"name"`
-	Schema string `json:"schema"`
-	Table  string `json:"table"`
+	Name string `json:"name"`
 }
 
 // Sources defines model for Sources.

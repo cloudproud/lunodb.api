@@ -867,14 +867,8 @@ components:
       type: object
       required:
         - name
-        - schema
-        - table
       properties:
         name:
-          type: string
-        schema:
-          type: string
-        table:
           type: string
     Connectors:
       type: array
