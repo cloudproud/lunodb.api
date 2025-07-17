@@ -58,7 +58,8 @@ message PingResponse {
 message FetchRequest {}
 
 message FetchResponse {
-  repeated node.v1.Table tables = 1;
+  Error error = 1;
+  repeated node.v1.Table tables = 2;
 }
 
 message ExecuteStatementRequest {
