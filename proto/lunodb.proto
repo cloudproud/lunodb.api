@@ -15,18 +15,20 @@ service Service {
 message Empty {}
 
 message ConnectorResponse {
+  uint32 id = 1;
   oneof state {
-    PingResponse ping = 1;
-    FetchResponse fetch = 2;
-    ExecuteStatementResponse execute_statement = 3;
+    PingResponse ping = 2;
+    FetchResponse fetch = 3;
+    ExecuteStatementResponse execute_statement = 4;
   }
 }
 
 message ConnectorRequest {
+  uint32 id = 1;
   oneof state {
-    PingRequest ping = 1;
-    FetchRequest fetch = 2;
-    ExecuteStatementRequest execute_statement = 3;
+    PingRequest ping = 2;
+    FetchRequest fetch = 3;
+    ExecuteStatementRequest execute_statement = 4;
   }
 }
 
