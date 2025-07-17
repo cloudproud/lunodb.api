@@ -68,9 +68,8 @@ message ExecuteStatementRequest {
 
 message ExecuteStatementResponse {
   oneof result {
-    Header header = 1;
-    Row data = 2;
-    Error error = 3;
-    Empty EOE = 4; // NOTE: end of executable
+    Row data = 1;
+    Error error = 2;
+    Empty EOE = 3; // NOTE: end of executable
   }
 }
