@@ -374,15 +374,6 @@ type ClientInterface interface {
 	// GetCatalogs request
 	GetCatalogs(ctx context.Context, namespace string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// DeleteConnector request
-	DeleteConnector(ctx context.Context, namespace string, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetConnector request
-	GetConnector(ctx context.Context, namespace string, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetNamespaceConnectors request
-	GetNamespaceConnectors(ctx context.Context, namespace string, reqEditors ...RequestEditorFn) (*http.Response, error)
-
 	// NewConnectorWithBody request with any body
 	NewConnectorWithBody(ctx context.Context, namespace string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -514,42 +505,6 @@ func (c *Client) UpdateCatalog(ctx context.Context, namespace string, catalog st
 
 func (c *Client) GetCatalogs(ctx context.Context, namespace string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetCatalogsRequest(c.Server, namespace)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) DeleteConnector(ctx context.Context, namespace string, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteConnectorRequest(c.Server, namespace, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) GetConnector(ctx context.Context, namespace string, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetConnectorRequest(c.Server, namespace, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) GetNamespaceConnectors(ctx context.Context, namespace string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetNamespaceConnectorsRequest(c.Server, namespace)
 	if err != nil {
 		return nil, err
 	}
@@ -979,122 +934,6 @@ func NewGetCatalogsRequest(server string, namespace string) (*http.Request, erro
 	}
 
 	operationPath := fmt.Sprintf("/v1/namespace/%s/catalogs", pathParam0)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewDeleteConnectorRequest generates requests for DeleteConnector
-func NewDeleteConnectorRequest(server string, namespace string, id string) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "namespace", runtime.ParamLocationPath, namespace)
-	if err != nil {
-		return nil, err
-	}
-
-	var pathParam1 string
-
-	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/v1/namespace/%s/connector/%s", pathParam0, pathParam1)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewGetConnectorRequest generates requests for GetConnector
-func NewGetConnectorRequest(server string, namespace string, id string) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "namespace", runtime.ParamLocationPath, namespace)
-	if err != nil {
-		return nil, err
-	}
-
-	var pathParam1 string
-
-	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/v1/namespace/%s/connector/%s", pathParam0, pathParam1)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewGetNamespaceConnectorsRequest generates requests for GetNamespaceConnectors
-func NewGetNamespaceConnectorsRequest(server string, namespace string) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "namespace", runtime.ParamLocationPath, namespace)
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/v1/namespace/%s/connectors", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1752,15 +1591,6 @@ type ClientWithResponsesInterface interface {
 	// GetCatalogsWithResponse request
 	GetCatalogsWithResponse(ctx context.Context, namespace string, reqEditors ...RequestEditorFn) (*GetCatalogsResponse, error)
 
-	// DeleteConnectorWithResponse request
-	DeleteConnectorWithResponse(ctx context.Context, namespace string, id string, reqEditors ...RequestEditorFn) (*DeleteConnectorResponse, error)
-
-	// GetConnectorWithResponse request
-	GetConnectorWithResponse(ctx context.Context, namespace string, id string, reqEditors ...RequestEditorFn) (*GetConnectorResponse, error)
-
-	// GetNamespaceConnectorsWithResponse request
-	GetNamespaceConnectorsWithResponse(ctx context.Context, namespace string, reqEditors ...RequestEditorFn) (*GetNamespaceConnectorsResponse, error)
-
 	// NewConnectorWithBodyWithResponse request with any body
 	NewConnectorWithBodyWithResponse(ctx context.Context, namespace string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*NewConnectorResponse, error)
 
@@ -1937,74 +1767,6 @@ func (r GetCatalogsResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetCatalogsResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type DeleteConnectorResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON401      *Problem
-}
-
-// Status returns HTTPResponse.Status
-func (r DeleteConnectorResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r DeleteConnectorResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type GetConnectorResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *Connector
-	JSON401      *Problem
-}
-
-// Status returns HTTPResponse.Status
-func (r GetConnectorResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetConnectorResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type GetNamespaceConnectorsResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *Connectors
-	JSON401      *Problem
-}
-
-// Status returns HTTPResponse.Status
-func (r GetNamespaceConnectorsResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetNamespaceConnectorsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -2358,33 +2120,6 @@ func (c *ClientWithResponses) GetCatalogsWithResponse(ctx context.Context, names
 	return ParseGetCatalogsResponse(rsp)
 }
 
-// DeleteConnectorWithResponse request returning *DeleteConnectorResponse
-func (c *ClientWithResponses) DeleteConnectorWithResponse(ctx context.Context, namespace string, id string, reqEditors ...RequestEditorFn) (*DeleteConnectorResponse, error) {
-	rsp, err := c.DeleteConnector(ctx, namespace, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseDeleteConnectorResponse(rsp)
-}
-
-// GetConnectorWithResponse request returning *GetConnectorResponse
-func (c *ClientWithResponses) GetConnectorWithResponse(ctx context.Context, namespace string, id string, reqEditors ...RequestEditorFn) (*GetConnectorResponse, error) {
-	rsp, err := c.GetConnector(ctx, namespace, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetConnectorResponse(rsp)
-}
-
-// GetNamespaceConnectorsWithResponse request returning *GetNamespaceConnectorsResponse
-func (c *ClientWithResponses) GetNamespaceConnectorsWithResponse(ctx context.Context, namespace string, reqEditors ...RequestEditorFn) (*GetNamespaceConnectorsResponse, error) {
-	rsp, err := c.GetNamespaceConnectors(ctx, namespace, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetNamespaceConnectorsResponse(rsp)
-}
-
 // NewConnectorWithBodyWithResponse request with arbitrary body returning *NewConnectorResponse
 func (c *ClientWithResponses) NewConnectorWithBodyWithResponse(ctx context.Context, namespace string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*NewConnectorResponse, error) {
 	rsp, err := c.NewConnectorWithBody(ctx, namespace, contentType, body, reqEditors...)
@@ -2699,98 +2434,6 @@ func ParseGetCatalogsResponse(rsp *http.Response) (*GetCatalogsResponse, error) 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest Catalogs
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest Problem
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON401 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseDeleteConnectorResponse parses an HTTP response from a DeleteConnectorWithResponse call
-func ParseDeleteConnectorResponse(rsp *http.Response) (*DeleteConnectorResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &DeleteConnectorResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest Problem
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON401 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseGetConnectorResponse parses an HTTP response from a GetConnectorWithResponse call
-func ParseGetConnectorResponse(rsp *http.Response) (*GetConnectorResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetConnectorResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest Connector
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest Problem
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON401 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseGetNamespaceConnectorsResponse parses an HTTP response from a GetNamespaceConnectorsWithResponse call
-func ParseGetNamespaceConnectorsResponse(rsp *http.Response) (*GetNamespaceConnectorsResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetNamespaceConnectorsResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest Connectors
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -3234,15 +2877,6 @@ type ServerInterface interface {
 	// Fetch all data catalogs
 	// (GET /v1/namespace/{namespace}/catalogs)
 	GetCatalogs(w http.ResponseWriter, r *http.Request, namespace string)
-	// Delete a connector
-	// (DELETE /v1/namespace/{namespace}/connector/{id})
-	DeleteConnector(w http.ResponseWriter, r *http.Request, namespace string, id string)
-	// Get a connector
-	// (GET /v1/namespace/{namespace}/connector/{id})
-	GetConnector(w http.ResponseWriter, r *http.Request, namespace string, id string)
-	// Get all connectors
-	// (GET /v1/namespace/{namespace}/connectors)
-	GetNamespaceConnectors(w http.ResponseWriter, r *http.Request, namespace string)
 	// Register a new connector
 	// (POST /v1/namespace/{namespace}/connectors)
 	NewConnector(w http.ResponseWriter, r *http.Request, namespace string)
@@ -3318,24 +2952,6 @@ func (_ Unimplemented) UpdateCatalog(w http.ResponseWriter, r *http.Request, nam
 // Fetch all data catalogs
 // (GET /v1/namespace/{namespace}/catalogs)
 func (_ Unimplemented) GetCatalogs(w http.ResponseWriter, r *http.Request, namespace string) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Delete a connector
-// (DELETE /v1/namespace/{namespace}/connector/{id})
-func (_ Unimplemented) DeleteConnector(w http.ResponseWriter, r *http.Request, namespace string, id string) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Get a connector
-// (GET /v1/namespace/{namespace}/connector/{id})
-func (_ Unimplemented) GetConnector(w http.ResponseWriter, r *http.Request, namespace string, id string) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Get all connectors
-// (GET /v1/namespace/{namespace}/connectors)
-func (_ Unimplemented) GetNamespaceConnectors(w http.ResponseWriter, r *http.Request, namespace string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -3613,117 +3229,6 @@ func (siw *ServerInterfaceWrapper) GetCatalogs(w http.ResponseWriter, r *http.Re
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetCatalogs(w, r, namespace)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// DeleteConnector operation middleware
-func (siw *ServerInterfaceWrapper) DeleteConnector(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "namespace" -------------
-	var namespace string
-
-	err = runtime.BindStyledParameterWithOptions("simple", "namespace", chi.URLParam(r, "namespace"), &namespace, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "namespace", Err: err})
-		return
-	}
-
-	// ------------- Path parameter "id" -------------
-	var id string
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
-
-	r = r.WithContext(ctx)
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.DeleteConnector(w, r, namespace, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// GetConnector operation middleware
-func (siw *ServerInterfaceWrapper) GetConnector(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "namespace" -------------
-	var namespace string
-
-	err = runtime.BindStyledParameterWithOptions("simple", "namespace", chi.URLParam(r, "namespace"), &namespace, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "namespace", Err: err})
-		return
-	}
-
-	// ------------- Path parameter "id" -------------
-	var id string
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
-
-	r = r.WithContext(ctx)
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetConnector(w, r, namespace, id)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// GetNamespaceConnectors operation middleware
-func (siw *ServerInterfaceWrapper) GetNamespaceConnectors(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "namespace" -------------
-	var namespace string
-
-	err = runtime.BindStyledParameterWithOptions("simple", "namespace", chi.URLParam(r, "namespace"), &namespace, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "namespace", Err: err})
-		return
-	}
-
-	ctx := r.Context()
-
-	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
-
-	r = r.WithContext(ctx)
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetNamespaceConnectors(w, r, namespace)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -4347,15 +3852,6 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/v1/namespace/{namespace}/catalogs", wrapper.GetCatalogs)
-	})
-	r.Group(func(r chi.Router) {
-		r.Delete(options.BaseURL+"/v1/namespace/{namespace}/connector/{id}", wrapper.DeleteConnector)
-	})
-	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/v1/namespace/{namespace}/connector/{id}", wrapper.GetConnector)
-	})
-	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/v1/namespace/{namespace}/connectors", wrapper.GetNamespaceConnectors)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/v1/namespace/{namespace}/connectors", wrapper.NewConnector)
