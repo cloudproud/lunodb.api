@@ -93,6 +93,12 @@ type ConnectorOptionType string
 // Connectors defines model for Connectors.
 type Connectors = []Connector
 
+// CustomConnector defines model for CustomConnector.
+type CustomConnector struct {
+	Description string `json:"description"`
+	Name        string `json:"name"`
+}
+
 // Empty defines model for Empty.
 type Empty = string
 
@@ -268,7 +274,7 @@ type SetCatalogJSONRequestBody = SetCatalog
 type UpdateCatalogJSONRequestBody = SetCatalog
 
 // NewConnectorJSONRequestBody defines body for NewConnector for application/json ContentType.
-type NewConnectorJSONRequestBody = Connector
+type NewConnectorJSONRequestBody = CustomConnector
 
 // NewKeyJSONRequestBody defines body for NewKey for application/json ContentType.
 type NewKeyJSONRequestBody = Key
@@ -1776,7 +1782,7 @@ func (r GetCatalogsResponse) StatusCode() int {
 type NewConnectorResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON201      *Connector
+	JSON201      *Source
 	JSON401      *Problem
 }
 
@@ -2466,7 +2472,7 @@ func ParseNewConnectorResponse(rsp *http.Response) (*NewConnectorResponse, error
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest Connector
+		var dest Source
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

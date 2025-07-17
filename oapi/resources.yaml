@@ -554,14 +554,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Connector"
+              $ref: "#/components/schemas/CustomConnector"
       responses:
         "201":
           description: The connector has been added to the system
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Connector"
+                $ref: "#/components/schemas/Source"
         "401":
           description: The user is unauthorised to delete the given catalog
           content:
@@ -886,6 +886,18 @@ components:
           type: string
           default: public
           description: the table schema referenced within SQL queries
+    CustomConnector:
+      type: object
+      required:
+        - name
+        - description
+      properties:
+        name:
+          type: string
+          example: PostgreSQL
+        description:
+          type: string
+          example: PostgreSQL connector
     Connectors:
       type: array
       items:
