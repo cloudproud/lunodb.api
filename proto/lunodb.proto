@@ -8,7 +8,7 @@ import "proto/types/types.proto";
 
 option go_package = "github.com/cloudproud/lunodb.pb/proto";
 
-service Service {
+service Stargate {
   rpc Connector(stream ConnectorResponse) returns (stream ConnectorRequest) {}
 }
 

@@ -19,27 +19,27 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Service_Connector_FullMethodName = "/cloudproud.lunodb.v1.Service/Connector"
+	Stargate_Connector_FullMethodName = "/cloudproud.lunodb.v1.Stargate/Connector"
 )
 
-// ServiceClient is the client API for Service service.
+// StargateClient is the client API for Stargate service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type ServiceClient interface {
+type StargateClient interface {
 	Connector(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[ConnectorResponse, ConnectorRequest], error)
 }
 
-type serviceClient struct {
+type stargateClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewServiceClient(cc grpc.ClientConnInterface) ServiceClient {
-	return &serviceClient{cc}
+func NewStargateClient(cc grpc.ClientConnInterface) StargateClient {
+	return &stargateClient{cc}
 }
 
-func (c *serviceClient) Connector(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[ConnectorResponse, ConnectorRequest], error) {
+func (c *stargateClient) Connector(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[ConnectorResponse, ConnectorRequest], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &Service_ServiceDesc.Streams[0], Service_Connector_FullMethodName, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &Stargate_ServiceDesc.Streams[0], Stargate_Connector_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -48,65 +48,65 @@ func (c *serviceClient) Connector(ctx context.Context, opts ...grpc.CallOption) 
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type Service_ConnectorClient = grpc.BidiStreamingClient[ConnectorResponse, ConnectorRequest]
+type Stargate_ConnectorClient = grpc.BidiStreamingClient[ConnectorResponse, ConnectorRequest]
 
-// ServiceServer is the server API for Service service.
-// All implementations must embed UnimplementedServiceServer
+// StargateServer is the server API for Stargate service.
+// All implementations must embed UnimplementedStargateServer
 // for forward compatibility.
-type ServiceServer interface {
+type StargateServer interface {
 	Connector(grpc.BidiStreamingServer[ConnectorResponse, ConnectorRequest]) error
-	mustEmbedUnimplementedServiceServer()
+	mustEmbedUnimplementedStargateServer()
 }
 
-// UnimplementedServiceServer must be embedded to have
+// UnimplementedStargateServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedServiceServer struct{}
+type UnimplementedStargateServer struct{}
 
-func (UnimplementedServiceServer) Connector(grpc.BidiStreamingServer[ConnectorResponse, ConnectorRequest]) error {
+func (UnimplementedStargateServer) Connector(grpc.BidiStreamingServer[ConnectorResponse, ConnectorRequest]) error {
 	return status.Errorf(codes.Unimplemented, "method Connector not implemented")
 }
-func (UnimplementedServiceServer) mustEmbedUnimplementedServiceServer() {}
-func (UnimplementedServiceServer) testEmbeddedByValue()                 {}
+func (UnimplementedStargateServer) mustEmbedUnimplementedStargateServer() {}
+func (UnimplementedStargateServer) testEmbeddedByValue()                  {}
 
-// UnsafeServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to ServiceServer will
+// UnsafeStargateServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to StargateServer will
 // result in compilation errors.
-type UnsafeServiceServer interface {
-	mustEmbedUnimplementedServiceServer()
+type UnsafeStargateServer interface {
+	mustEmbedUnimplementedStargateServer()
 }
 
-func RegisterServiceServer(s grpc.ServiceRegistrar, srv ServiceServer) {
-	// If the following call pancis, it indicates UnimplementedServiceServer was
+func RegisterStargateServer(s grpc.ServiceRegistrar, srv StargateServer) {
+	// If the following call pancis, it indicates UnimplementedStargateServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&Service_ServiceDesc, srv)
+	s.RegisterService(&Stargate_ServiceDesc, srv)
 }
 
-func _Service_Connector_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(ServiceServer).Connector(&grpc.GenericServerStream[ConnectorResponse, ConnectorRequest]{ServerStream: stream})
+func _Stargate_Connector_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(StargateServer).Connector(&grpc.GenericServerStream[ConnectorResponse, ConnectorRequest]{ServerStream: stream})
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type Service_ConnectorServer = grpc.BidiStreamingServer[ConnectorResponse, ConnectorRequest]
+type Stargate_ConnectorServer = grpc.BidiStreamingServer[ConnectorResponse, ConnectorRequest]
 
-// Service_ServiceDesc is the grpc.ServiceDesc for Service service.
+// Stargate_ServiceDesc is the grpc.ServiceDesc for Stargate service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var Service_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "cloudproud.lunodb.v1.Service",
-	HandlerType: (*ServiceServer)(nil),
+var Stargate_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "cloudproud.lunodb.v1.Stargate",
+	HandlerType: (*StargateServer)(nil),
 	Methods:     []grpc.MethodDesc{},
 	Streams: []grpc.StreamDesc{
 		{
 			StreamName:    "Connector",
-			Handler:       _Service_Connector_Handler,
+			Handler:       _Stargate_Connector_Handler,
 			ServerStreams: true,
 			ClientStreams: true,
 		},
