@@ -117,7 +117,7 @@ type Key struct {
 	CreatedBy openapi_types.UUID `json:"created_by"`
 
 	// Description Human-readable description
-	Description *string `json:"description,omitempty"`
+	Description string `json:"description"`
 
 	// ExpiresAt Optional expiration timestamp
 	ExpiresAt *time.Time `json:"expires_at"`
