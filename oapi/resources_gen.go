@@ -123,8 +123,8 @@ type Key struct {
 	ExpiresAt *time.Time `json:"expires_at"`
 
 	// Id Unique identifier of the key
-	Id       openapi_types.UUID `json:"id"`
-	Policies []Policy           `json:"policies"`
+	Id       uint64   `json:"id"`
+	Policies []Policy `json:"policies"`
 
 	// Secret The API secret (only returned at creation time)
 	Secret *string `json:"secret,omitempty"`
@@ -146,8 +146,8 @@ type NewSource struct {
 
 // Policy defines model for Policy.
 type Policy struct {
-	Permissions *[]string `json:"permissions,omitempty"`
-	Resources   []string  `json:"resources"`
+	Permissions []string `json:"permissions"`
+	Resources   []string `json:"resources"`
 }
 
 // Problem defines model for Problem.
