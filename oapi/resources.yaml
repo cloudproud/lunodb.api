@@ -1058,29 +1058,17 @@ components:
       type: object
       required:
         - name
-        - description
-        - labels
         - options
       properties:
         name:
           type: string
           example: "Customer Service"
-        description:
-          type: string
-          example: "Customer Service"
-        labels:
-          type: array
-          items:
-            type: string
-            example: logistics, shipping, products
         options:
           $ref: "#/components/schemas/SourceOptions"
     NewSource:
       type: object
       required:
         - name
-        - description
-        - labels
         - expose_global
         - connector
         - options
@@ -1088,14 +1076,6 @@ components:
         name:
           type: string
           example: "Customer Service"
-        description:
-          type: string
-          example: "Customer Service"
-        labels:
-          type: array
-          items:
-            type: string
-            example: logistics, shipping, products
         expose_global:
           type: boolean
           example: true

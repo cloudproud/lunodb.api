@@ -137,9 +137,7 @@ type Keys = []Key
 type NewSource struct {
 	// Connector represents the connector name used to connect with the given source
 	Connector    string        `json:"connector"`
-	Description  string        `json:"description"`
 	ExposeGlobal bool          `json:"expose_global"`
-	Labels       []string      `json:"labels"`
 	Name         string        `json:"name"`
 	Options      SourceOptions `json:"options"`
 }
@@ -245,10 +243,8 @@ type Tables = []Table
 
 // UpdateSource defines model for UpdateSource.
 type UpdateSource struct {
-	Description string        `json:"description"`
-	Labels      []string      `json:"labels"`
-	Name        string        `json:"name"`
-	Options     SourceOptions `json:"options"`
+	Name    string        `json:"name"`
+	Options SourceOptions `json:"options"`
 }
 
 // QueryParams defines parameters for Query.
