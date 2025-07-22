@@ -243,6 +243,14 @@ type TableRef struct {
 // Tables defines model for Tables.
 type Tables = []Table
 
+// UpdateSource defines model for UpdateSource.
+type UpdateSource struct {
+	Description string        `json:"description"`
+	Labels      []string      `json:"labels"`
+	Name        string        `json:"name"`
+	Options     SourceOptions `json:"options"`
+}
+
 // QueryParams defines parameters for Query.
 type QueryParams struct {
 	// Statements SQL query statements to be executed
@@ -284,6 +292,9 @@ type NewSourceJSONRequestBody = NewSource
 
 // TestSourceConnectionJSONRequestBody defines body for TestSourceConnection for application/json ContentType.
 type TestSourceConnectionJSONRequestBody = NewSource
+
+// UpdateSourceJSONRequestBody defines body for UpdateSource for application/json ContentType.
+type UpdateSourceJSONRequestBody = UpdateSource
 
 // RequestEditorFn  is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
@@ -358,6 +369,9 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 
 // The interface specification for the client above.
 type ClientInterface interface {
+	// GetConnector request
+	GetConnector(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetConnectors request
 	GetConnectors(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -415,6 +429,11 @@ type ClientInterface interface {
 	// GetSource request
 	GetSource(ctx context.Context, namespace string, source string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// UpdateSourceWithBody request with any body
+	UpdateSourceWithBody(ctx context.Context, namespace string, source string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateSource(ctx context.Context, namespace string, source string, body UpdateSourceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// FetchSource request
 	FetchSource(ctx context.Context, namespace string, source string, params *FetchSourceParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -423,6 +442,18 @@ type ClientInterface interface {
 
 	// GetSources request
 	GetSources(ctx context.Context, namespace string, reqEditors ...RequestEditorFn) (*http.Response, error)
+}
+
+func (c *Client) GetConnector(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetConnectorRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
 }
 
 func (c *Client) GetConnectors(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -677,6 +708,30 @@ func (c *Client) GetSource(ctx context.Context, namespace string, source string,
 	return c.Client.Do(req)
 }
 
+func (c *Client) UpdateSourceWithBody(ctx context.Context, namespace string, source string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateSourceRequestWithBody(c.Server, namespace, source, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateSource(ctx context.Context, namespace string, source string, body UpdateSourceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateSourceRequest(c.Server, namespace, source, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) FetchSource(ctx context.Context, namespace string, source string, params *FetchSourceParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewFetchSourceRequest(c.Server, namespace, source, params)
 	if err != nil {
@@ -711,6 +766,40 @@ func (c *Client) GetSources(ctx context.Context, namespace string, reqEditors ..
 		return nil, err
 	}
 	return c.Client.Do(req)
+}
+
+// NewGetConnectorRequest generates requests for GetConnector
+func NewGetConnectorRequest(server string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/connector/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
 }
 
 // NewGetConnectorsRequest generates requests for GetConnectors
@@ -1398,6 +1487,60 @@ func NewGetSourceRequest(server string, namespace string, source string) (*http.
 	return req, nil
 }
 
+// NewUpdateSourceRequest calls the generic UpdateSource builder with application/json body
+func NewUpdateSourceRequest(server string, namespace string, source string, body UpdateSourceJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateSourceRequestWithBody(server, namespace, source, "application/json", bodyReader)
+}
+
+// NewUpdateSourceRequestWithBody generates requests for UpdateSource with any type of body
+func NewUpdateSourceRequestWithBody(server string, namespace string, source string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "namespace", runtime.ParamLocationPath, namespace)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "source", runtime.ParamLocationPath, source)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/namespace/%s/source/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewFetchSourceRequest generates requests for FetchSource
 func NewFetchSourceRequest(server string, namespace string, source string, params *FetchSourceParams) (*http.Request, error) {
 	var err error
@@ -1575,6 +1718,9 @@ func WithBaseURL(baseURL string) ClientOption {
 
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
+	// GetConnectorWithResponse request
+	GetConnectorWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*GetConnectorResponse, error)
+
 	// GetConnectorsWithResponse request
 	GetConnectorsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetConnectorsResponse, error)
 
@@ -1632,6 +1778,11 @@ type ClientWithResponsesInterface interface {
 	// GetSourceWithResponse request
 	GetSourceWithResponse(ctx context.Context, namespace string, source string, reqEditors ...RequestEditorFn) (*GetSourceResponse, error)
 
+	// UpdateSourceWithBodyWithResponse request with any body
+	UpdateSourceWithBodyWithResponse(ctx context.Context, namespace string, source string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSourceResponse, error)
+
+	UpdateSourceWithResponse(ctx context.Context, namespace string, source string, body UpdateSourceJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSourceResponse, error)
+
 	// FetchSourceWithResponse request
 	FetchSourceWithResponse(ctx context.Context, namespace string, source string, params *FetchSourceParams, reqEditors ...RequestEditorFn) (*FetchSourceResponse, error)
 
@@ -1640,6 +1791,29 @@ type ClientWithResponsesInterface interface {
 
 	// GetSourcesWithResponse request
 	GetSourcesWithResponse(ctx context.Context, namespace string, reqEditors ...RequestEditorFn) (*GetSourcesResponse, error)
+}
+
+type GetConnectorResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Connector
+	JSON401      *Problem
+}
+
+// Status returns HTTPResponse.Status
+func (r GetConnectorResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetConnectorResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
 }
 
 type GetConnectorsResponse struct {
@@ -1987,6 +2161,30 @@ func (r GetSourceResponse) StatusCode() int {
 	return 0
 }
 
+type UpdateSourceResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Source
+	JSON401      *Problem
+	JSON404      *Problem
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateSourceResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateSourceResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type FetchSourceResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -2054,6 +2252,15 @@ func (r GetSourcesResponse) StatusCode() int {
 		return r.HTTPResponse.StatusCode
 	}
 	return 0
+}
+
+// GetConnectorWithResponse request returning *GetConnectorResponse
+func (c *ClientWithResponses) GetConnectorWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*GetConnectorResponse, error) {
+	rsp, err := c.GetConnector(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetConnectorResponse(rsp)
 }
 
 // GetConnectorsWithResponse request returning *GetConnectorsResponse
@@ -2239,6 +2446,23 @@ func (c *ClientWithResponses) GetSourceWithResponse(ctx context.Context, namespa
 	return ParseGetSourceResponse(rsp)
 }
 
+// UpdateSourceWithBodyWithResponse request with arbitrary body returning *UpdateSourceResponse
+func (c *ClientWithResponses) UpdateSourceWithBodyWithResponse(ctx context.Context, namespace string, source string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSourceResponse, error) {
+	rsp, err := c.UpdateSourceWithBody(ctx, namespace, source, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateSourceResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateSourceWithResponse(ctx context.Context, namespace string, source string, body UpdateSourceJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSourceResponse, error) {
+	rsp, err := c.UpdateSource(ctx, namespace, source, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateSourceResponse(rsp)
+}
+
 // FetchSourceWithResponse request returning *FetchSourceResponse
 func (c *ClientWithResponses) FetchSourceWithResponse(ctx context.Context, namespace string, source string, params *FetchSourceParams, reqEditors ...RequestEditorFn) (*FetchSourceResponse, error) {
 	rsp, err := c.FetchSource(ctx, namespace, source, params, reqEditors...)
@@ -2264,6 +2488,39 @@ func (c *ClientWithResponses) GetSourcesWithResponse(ctx context.Context, namesp
 		return nil, err
 	}
 	return ParseGetSourcesResponse(rsp)
+}
+
+// ParseGetConnectorResponse parses an HTTP response from a GetConnectorWithResponse call
+func ParseGetConnectorResponse(rsp *http.Response) (*GetConnectorResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetConnectorResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Connector
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Problem
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	}
+
+	return response, nil
 }
 
 // ParseGetConnectorsResponse parses an HTTP response from a GetConnectorsWithResponse call
@@ -2764,6 +3021,46 @@ func ParseGetSourceResponse(rsp *http.Response) (*GetSourceResponse, error) {
 	return response, nil
 }
 
+// ParseUpdateSourceResponse parses an HTTP response from a UpdateSourceWithResponse call
+func ParseUpdateSourceResponse(rsp *http.Response) (*UpdateSourceResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateSourceResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Source
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Problem
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest Problem
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseFetchSourceResponse parses an HTTP response from a FetchSourceWithResponse call
 func ParseFetchSourceResponse(rsp *http.Response) (*FetchSourceResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -2865,6 +3162,9 @@ func ParseGetSourcesResponse(rsp *http.Response) (*GetSourcesResponse, error) {
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// Get a connector
+	// (GET /v1/connector/{id})
+	GetConnector(w http.ResponseWriter, r *http.Request, id string)
 	// Fetch all available connectors
 	// (GET /v1/connectors)
 	GetConnectors(w http.ResponseWriter, r *http.Request)
@@ -2910,6 +3210,9 @@ type ServerInterface interface {
 	// Fetch the source details within the given catalog
 	// (GET /v1/namespace/{namespace}/source/{source})
 	GetSource(w http.ResponseWriter, r *http.Request, namespace string, source string)
+	// Update a given source
+	// (PUT /v1/namespace/{namespace}/source/{source})
+	UpdateSource(w http.ResponseWriter, r *http.Request, namespace string, source string)
 	// Fetch the latest source tables and schemas
 	// (GET /v1/namespace/{namespace}/source/{source}/fetch)
 	FetchSource(w http.ResponseWriter, r *http.Request, namespace string, source string, params FetchSourceParams)
@@ -2924,6 +3227,12 @@ type ServerInterface interface {
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
 
 type Unimplemented struct{}
+
+// Get a connector
+// (GET /v1/connector/{id})
+func (_ Unimplemented) GetConnector(w http.ResponseWriter, r *http.Request, id string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
 
 // Fetch all available connectors
 // (GET /v1/connectors)
@@ -3015,6 +3324,12 @@ func (_ Unimplemented) GetSource(w http.ResponseWriter, r *http.Request, namespa
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// Update a given source
+// (PUT /v1/namespace/{namespace}/source/{source})
+func (_ Unimplemented) UpdateSource(w http.ResponseWriter, r *http.Request, namespace string, source string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // Fetch the latest source tables and schemas
 // (GET /v1/namespace/{namespace}/source/{source}/fetch)
 func (_ Unimplemented) FetchSource(w http.ResponseWriter, r *http.Request, namespace string, source string, params FetchSourceParams) {
@@ -3041,6 +3356,37 @@ type ServerInterfaceWrapper struct {
 }
 
 type MiddlewareFunc func(http.Handler) http.Handler
+
+// GetConnector operation middleware
+func (siw *ServerInterfaceWrapper) GetConnector(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetConnector(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
 
 // GetConnectors operation middleware
 func (siw *ServerInterfaceWrapper) GetConnectors(w http.ResponseWriter, r *http.Request) {
@@ -3599,6 +3945,46 @@ func (siw *ServerInterfaceWrapper) GetSource(w http.ResponseWriter, r *http.Requ
 	handler.ServeHTTP(w, r)
 }
 
+// UpdateSource operation middleware
+func (siw *ServerInterfaceWrapper) UpdateSource(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "namespace" -------------
+	var namespace string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "namespace", chi.URLParam(r, "namespace"), &namespace, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "namespace", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "source" -------------
+	var source string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "source", chi.URLParam(r, "source"), &source, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "source", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateSource(w, r, namespace, source)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // FetchSource operation middleware
 func (siw *ServerInterfaceWrapper) FetchSource(w http.ResponseWriter, r *http.Request) {
 
@@ -3842,6 +4228,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	}
 
 	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/connector/{id}", wrapper.GetConnector)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/v1/connectors", wrapper.GetConnectors)
 	})
 	r.Group(func(r chi.Router) {
@@ -3885,6 +4274,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/v1/namespace/{namespace}/source/{source}", wrapper.GetSource)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/v1/namespace/{namespace}/source/{source}", wrapper.UpdateSource)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/v1/namespace/{namespace}/source/{source}/fetch", wrapper.FetchSource)
