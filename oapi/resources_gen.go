@@ -45,7 +45,7 @@ type Catalog struct {
 	Labels      *[]string `json:"labels"`
 	Name        string    `json:"name"`
 	Tables      Tables    `json:"tables"`
-	Uid         uint64    `json:"uid"`
+	Uid         string    `json:"uid"`
 }
 
 // CatalogTable defines model for CatalogTable.
@@ -123,7 +123,7 @@ type Key struct {
 	ExpiresAt *time.Time `json:"expires_at"`
 
 	// Id Unique identifier of the key
-	Id       uint64   `json:"id"`
+	Id       string   `json:"id"`
 	Policies []Policy `json:"policies"`
 
 	// Secret The API secret (only returned at creation time)
@@ -197,7 +197,7 @@ type SetCatalog struct {
 	// Name the catalog name referenced within SQL queries
 	Name   string         `json:"name"`
 	Tables []CatalogTable `json:"tables"`
-	Uid    uint64         `json:"uid"`
+	Uid    string         `json:"uid"`
 }
 
 // Source defines model for Source.
@@ -207,7 +207,7 @@ type Source struct {
 	Healthy   bool   `json:"healthy"`
 	Name      string `json:"name"`
 	Tables    Tables `json:"tables"`
-	Uid       uint64 `json:"uid"`
+	Uid       string `json:"uid"`
 }
 
 // SourceOptions defines model for SourceOptions.
