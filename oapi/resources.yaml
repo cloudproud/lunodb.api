@@ -1057,12 +1057,8 @@ components:
     UpdateSource:
       type: object
       required:
-        - name
         - options
       properties:
-        name:
-          type: string
-          example: "Customer Service"
         options:
           $ref: "#/components/schemas/SourceOptions"
     NewSource:

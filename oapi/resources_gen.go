@@ -243,7 +243,6 @@ type Tables = []Table
 
 // UpdateSource defines model for UpdateSource.
 type UpdateSource struct {
-	Name    string        `json:"name"`
 	Options SourceOptions `json:"options"`
 }
 
