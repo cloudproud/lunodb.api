@@ -574,7 +574,7 @@ paths:
         - IAM
       summary: Fetch all API keys
       description: Fetch all API keys registered within the given namespace
-      operationId: getKey
+      operationId: getKeys
       parameters:
         - in: path
           name: namespace

@@ -388,8 +388,8 @@ type ClientInterface interface {
 	// DeleteKey request
 	DeleteKey(ctx context.Context, namespace string, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetKey request
-	GetKey(ctx context.Context, namespace string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetKeys request
+	GetKeys(ctx context.Context, namespace string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// NewKeyWithBody request with any body
 	NewKeyWithBody(ctx context.Context, namespace string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -557,8 +557,8 @@ func (c *Client) DeleteKey(ctx context.Context, namespace string, id string, req
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetKey(ctx context.Context, namespace string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetKeyRequest(c.Server, namespace)
+func (c *Client) GetKeys(ctx context.Context, namespace string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetKeysRequest(c.Server, namespace)
 	if err != nil {
 		return nil, err
 	}
@@ -1045,8 +1045,8 @@ func NewDeleteKeyRequest(server string, namespace string, id string) (*http.Requ
 	return req, nil
 }
 
-// NewGetKeyRequest generates requests for GetKey
-func NewGetKeyRequest(server string, namespace string) (*http.Request, error) {
+// NewGetKeysRequest generates requests for GetKeys
+func NewGetKeysRequest(server string, namespace string) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -1605,8 +1605,8 @@ type ClientWithResponsesInterface interface {
 	// DeleteKeyWithResponse request
 	DeleteKeyWithResponse(ctx context.Context, namespace string, id string, reqEditors ...RequestEditorFn) (*DeleteKeyResponse, error)
 
-	// GetKeyWithResponse request
-	GetKeyWithResponse(ctx context.Context, namespace string, reqEditors ...RequestEditorFn) (*GetKeyResponse, error)
+	// GetKeysWithResponse request
+	GetKeysWithResponse(ctx context.Context, namespace string, reqEditors ...RequestEditorFn) (*GetKeysResponse, error)
 
 	// NewKeyWithBodyWithResponse request with any body
 	NewKeyWithBodyWithResponse(ctx context.Context, namespace string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*NewKeyResponse, error)
@@ -1824,7 +1824,7 @@ func (r DeleteKeyResponse) StatusCode() int {
 	return 0
 }
 
-type GetKeyResponse struct {
+type GetKeysResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *Keys
@@ -1832,7 +1832,7 @@ type GetKeyResponse struct {
 }
 
 // Status returns HTTPResponse.Status
-func (r GetKeyResponse) Status() string {
+func (r GetKeysResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1840,7 +1840,7 @@ func (r GetKeyResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetKeyResponse) StatusCode() int {
+func (r GetKeysResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -2152,13 +2152,13 @@ func (c *ClientWithResponses) DeleteKeyWithResponse(ctx context.Context, namespa
 	return ParseDeleteKeyResponse(rsp)
 }
 
-// GetKeyWithResponse request returning *GetKeyResponse
-func (c *ClientWithResponses) GetKeyWithResponse(ctx context.Context, namespace string, reqEditors ...RequestEditorFn) (*GetKeyResponse, error) {
-	rsp, err := c.GetKey(ctx, namespace, reqEditors...)
+// GetKeysWithResponse request returning *GetKeysResponse
+func (c *ClientWithResponses) GetKeysWithResponse(ctx context.Context, namespace string, reqEditors ...RequestEditorFn) (*GetKeysResponse, error) {
+	rsp, err := c.GetKeys(ctx, namespace, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetKeyResponse(rsp)
+	return ParseGetKeysResponse(rsp)
 }
 
 // NewKeyWithBodyWithResponse request with arbitrary body returning *NewKeyResponse
@@ -2516,15 +2516,15 @@ func ParseDeleteKeyResponse(rsp *http.Response) (*DeleteKeyResponse, error) {
 	return response, nil
 }
 
-// ParseGetKeyResponse parses an HTTP response from a GetKeyWithResponse call
-func ParseGetKeyResponse(rsp *http.Response) (*GetKeyResponse, error) {
+// ParseGetKeysResponse parses an HTTP response from a GetKeysWithResponse call
+func ParseGetKeysResponse(rsp *http.Response) (*GetKeysResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetKeyResponse{
+	response := &GetKeysResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2891,7 +2891,7 @@ type ServerInterface interface {
 	DeleteKey(w http.ResponseWriter, r *http.Request, namespace string, id string)
 	// Fetch all API keys
 	// (GET /v1/namespace/{namespace}/keys)
-	GetKey(w http.ResponseWriter, r *http.Request, namespace string)
+	GetKeys(w http.ResponseWriter, r *http.Request, namespace string)
 	// Register a new API key
 	// (POST /v1/namespace/{namespace}/keys)
 	NewKey(w http.ResponseWriter, r *http.Request, namespace string)
@@ -2975,7 +2975,7 @@ func (_ Unimplemented) DeleteKey(w http.ResponseWriter, r *http.Request, namespa
 
 // Fetch all API keys
 // (GET /v1/namespace/{namespace}/keys)
-func (_ Unimplemented) GetKey(w http.ResponseWriter, r *http.Request, namespace string) {
+func (_ Unimplemented) GetKeys(w http.ResponseWriter, r *http.Request, namespace string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -3315,8 +3315,8 @@ func (siw *ServerInterfaceWrapper) DeleteKey(w http.ResponseWriter, r *http.Requ
 	handler.ServeHTTP(w, r)
 }
 
-// GetKey operation middleware
-func (siw *ServerInterfaceWrapper) GetKey(w http.ResponseWriter, r *http.Request) {
+// GetKeys operation middleware
+func (siw *ServerInterfaceWrapper) GetKeys(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -3336,7 +3336,7 @@ func (siw *ServerInterfaceWrapper) GetKey(w http.ResponseWriter, r *http.Request
 	r = r.WithContext(ctx)
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetKey(w, r, namespace)
+		siw.Handler.GetKeys(w, r, namespace)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -3866,7 +3866,7 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Delete(options.BaseURL+"/v1/namespace/{namespace}/key/{id}/revoke", wrapper.DeleteKey)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/v1/namespace/{namespace}/keys", wrapper.GetKey)
+		r.Get(options.BaseURL+"/v1/namespace/{namespace}/keys", wrapper.GetKeys)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/v1/namespace/{namespace}/keys", wrapper.NewKey)
