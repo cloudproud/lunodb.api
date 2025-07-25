@@ -394,6 +394,9 @@ type ClientInterface interface {
 
 	NewConnector(ctx context.Context, namespace string, body NewConnectorJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetKey request
+	GetKey(ctx context.Context, namespace string, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// DeleteKey request
 	DeleteKey(ctx context.Context, namespace string, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -561,6 +564,18 @@ func (c *Client) NewConnectorWithBody(ctx context.Context, namespace string, con
 
 func (c *Client) NewConnector(ctx context.Context, namespace string, body NewConnectorJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewNewConnectorRequest(c.Server, namespace, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetKey(ctx context.Context, namespace string, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetKeyRequest(c.Server, namespace, id)
 	if err != nil {
 		return nil, err
 	}
@@ -1084,6 +1099,47 @@ func NewNewConnectorRequestWithBody(server string, namespace string, contentType
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetKeyRequest generates requests for GetKey
+func NewGetKeyRequest(server string, namespace string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "namespace", runtime.ParamLocationPath, namespace)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/namespace/%s/key/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	return req, nil
 }
@@ -1743,6 +1799,9 @@ type ClientWithResponsesInterface interface {
 
 	NewConnectorWithResponse(ctx context.Context, namespace string, body NewConnectorJSONRequestBody, reqEditors ...RequestEditorFn) (*NewConnectorResponse, error)
 
+	// GetKeyWithResponse request
+	GetKeyWithResponse(ctx context.Context, namespace string, id string, reqEditors ...RequestEditorFn) (*GetKeyResponse, error)
+
 	// DeleteKeyWithResponse request
 	DeleteKeyWithResponse(ctx context.Context, namespace string, id string, reqEditors ...RequestEditorFn) (*DeleteKeyResponse, error)
 
@@ -1965,6 +2024,29 @@ func (r NewConnectorResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r NewConnectorResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetKeyResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Key
+	JSON401      *Problem
+}
+
+// Status returns HTTPResponse.Status
+func (r GetKeyResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetKeyResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -2343,6 +2425,15 @@ func (c *ClientWithResponses) NewConnectorWithResponse(ctx context.Context, name
 		return nil, err
 	}
 	return ParseNewConnectorResponse(rsp)
+}
+
+// GetKeyWithResponse request returning *GetKeyResponse
+func (c *ClientWithResponses) GetKeyWithResponse(ctx context.Context, namespace string, id string, reqEditors ...RequestEditorFn) (*GetKeyResponse, error) {
+	rsp, err := c.GetKey(ctx, namespace, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetKeyResponse(rsp)
 }
 
 // DeleteKeyWithResponse request returning *DeleteKeyResponse
@@ -2729,6 +2820,39 @@ func ParseNewConnectorResponse(rsp *http.Response) (*NewConnectorResponse, error
 			return nil, err
 		}
 		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Problem
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetKeyResponse parses an HTTP response from a GetKeyWithResponse call
+func ParseGetKeyResponse(rsp *http.Response) (*GetKeyResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetKeyResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Key
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
 		var dest Problem
@@ -3181,6 +3305,9 @@ type ServerInterface interface {
 	// Register a new connector
 	// (POST /v1/namespace/{namespace}/connectors)
 	NewConnector(w http.ResponseWriter, r *http.Request, namespace string)
+	// Fetch a API key
+	// (GET /v1/namespace/{namespace}/key/{id})
+	GetKey(w http.ResponseWriter, r *http.Request, namespace string, id string)
 	// Revoke the given key
 	// (DELETE /v1/namespace/{namespace}/key/{id}/revoke)
 	DeleteKey(w http.ResponseWriter, r *http.Request, namespace string, id string)
@@ -3268,6 +3395,12 @@ func (_ Unimplemented) GetCatalogs(w http.ResponseWriter, r *http.Request, names
 // Register a new connector
 // (POST /v1/namespace/{namespace}/connectors)
 func (_ Unimplemented) NewConnector(w http.ResponseWriter, r *http.Request, namespace string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Fetch a API key
+// (GET /v1/namespace/{namespace}/key/{id})
+func (_ Unimplemented) GetKey(w http.ResponseWriter, r *http.Request, namespace string, id string) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -3607,6 +3740,46 @@ func (siw *ServerInterfaceWrapper) NewConnector(w http.ResponseWriter, r *http.R
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.NewConnector(w, r, namespace)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetKey operation middleware
+func (siw *ServerInterfaceWrapper) GetKey(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "namespace" -------------
+	var namespace string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "namespace", chi.URLParam(r, "namespace"), &namespace, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "namespace", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetKey(w, r, namespace, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -4245,6 +4418,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/v1/namespace/{namespace}/connectors", wrapper.NewConnector)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/namespace/{namespace}/key/{id}", wrapper.GetKey)
 	})
 	r.Group(func(r chi.Router) {
 		r.Delete(options.BaseURL+"/v1/namespace/{namespace}/key/{id}/revoke", wrapper.DeleteKey)
