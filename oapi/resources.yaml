@@ -1128,6 +1128,7 @@ components:
         - id
         - policies
         - description
+        - secret
         - created_at
         - created_by
       properties:
@@ -1136,7 +1137,7 @@ components:
           description: Unique identifier of the key
         secret:
           type: string
-          description: The API secret (only returned at creation time)
+          description: The API secret key
         policies:
           type: array
           items:

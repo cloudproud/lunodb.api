@@ -126,8 +126,8 @@ type Key struct {
 	Id       string   `json:"id"`
 	Policies []Policy `json:"policies"`
 
-	// Secret The API secret (only returned at creation time)
-	Secret *string `json:"secret,omitempty"`
+	// Secret The API secret key
+	Secret string `json:"secret"`
 }
 
 // Keys defines model for Keys.
