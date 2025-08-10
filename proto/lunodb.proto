@@ -63,7 +63,7 @@ message FetchResponse {
 }
 
 message ExecuteStatementRequest {
-  connector.plan.v1.Literal plan = 1;
+  connector.plan.v1.Node plan = 1;
 }
 
 message ExecuteStatementResponse {

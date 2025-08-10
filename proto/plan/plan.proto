@@ -7,110 +7,167 @@ import "proto/types/types.proto";
 
 option go_package = "github.com/cloudproud/lunodb.api/proto/plan";
 
-message Literal {
-  repeated Expression columns = 1;
-  From from = 2;
-  FilterExpression filter = 3;
-  Aggregation aggregation = 4;
-  OrderBy order_by = 5;
-}
-
-message From {
-  string table = 1;
-  string schema = 2;
-}
-
-message Expression {
-  oneof statement {
-    Column column = 1;
-    Function function = 2;
-    BinaryExpression binary_expression = 3;
-    Constant constant = 4;
-    Tuple tuple = 5;
-    VariableExpression variable = 6;
-    Parameter parameter = 7;
-    CastExpression cast_expression = 8;
+message Node {
+  oneof plan {
+    ScannerNode scanner = 1;
+    ColumnNode column = 2;
+    FilterNode filter = 3;
+    FunctionNode function = 4;
+    AggregationNode aggregation = 5;
+    // reserved 6
+    AndExpressionNode and_expression = 7;
+    OrExpressionNode or_expression = 8;
+    ComparisonExpressionNode comparison_expression = 9;
+    BinaryExpressionNode binary_expression = 10;
+    CastExpression cast_expression = 11;
+    CaseExpressionNode case_expression = 12;
+    ConstantNode constant = 13;
+    // reserved 14
+    // reserved 15
+    // reserved 16
+    // reserved 17
+    TupleNode tuple = 18;
+    VariableExpression variable = 19;
+    OrderByNode order_by = 20;
+    ValuesClauseNode values = 21;
+    // reserved 22
+    // reserved 23
+    // reserved 24
+    ParameterNode parameter = 25;
+    // reserved 26
+    // reserved 27
+    DistinctNode distinct = 28;
+    // reserved 29
+    // reserved 30
+    ReferenceNode reference = 31;
+    ValueNode value = 32;
   }
 }
 
-message Column {
-  string name = 1;
-  string table = 2;
-  string schema = 3;
-  string catalog = 4;
+message ColumnNode {
+  uint64 id = 1 [(gogoproto.customname) = "ID"];
+  string name = 2;
+  string table = 3;
+  string schema = 4;
+  string catalog = 5;
+  Node node = 6;
+  repeated node.v1.Operator operators = 7;
 }
 
-message FilterExpression {
-  oneof condition {
-    Expression expression = 1;
-    AndExpression and_expression = 2;
-    OrExpression or_expression = 3;
-    ComparisonExpression comparison_expression = 4;
-  }
+message ScannerNode {
+  node.v1.Table table = 1;
+  repeated Node expressions = 2;
+  Node from = 3;
+  repeated node.v1.Operator operators = 4;
 }
 
-message Function {
-  repeated Expression expressions = 1;
+message FilterNode {
+  Node conditions = 1;
+  Node from = 2;
+}
+
+message FunctionNode {
+  repeated Node expressions = 1;
   string name = 2;
   bool distinct = 3;
 }
 
-message Aggregation {
-  repeated Expression group_by = 1;
-  Expression having = 2;
-  repeated Expression expressions = 3;
+message AggregationNode {
+  Node from = 1;
+  repeated Node group_by = 2;
+  Node having = 3;
+  repeated Node expressions = 4;
 }
 
-message AndExpression {
-  FilterExpression left = 1;
-  FilterExpression right = 2;
+message AndExpressionNode {
+  Node left = 1;
+  Node right = 2;
 }
 
-message OrExpression {
-  FilterExpression left = 1;
-  FilterExpression right = 2;
+message OrExpressionNode {
+  Node left = 1;
+  Node right = 2;
 }
 
-message ComparisonExpression {
-  node.v1.OperatorStatement operator = 1;
-  FilterExpression left = 2;
-  FilterExpression right = 3;
-  node.v1.OperatorStatement sub_operator = 4;
-}
-
-message BinaryExpression {
+message BinaryExpressionNode {
   node.v1.BinaryStatement operator = 1;
-  Expression left = 2;
-  Expression right = 3;
+  Node left = 2;
+  Node right = 3;
 }
 
 message CastExpression {
   types.v1.Type type = 1;
-  Expression expression = 2;
+  Node expression = 2;
 }
 
-message Constant {
+message ComparisonExpressionNode {
+  node.v1.OperatorStatement operator = 1;
+  Node left = 2;
+  Node right = 3;
+  node.v1.OperatorStatement sub_operator = 4;
+}
+
+message CaseExpressionNode {
+  Node expression = 1;
+  repeated WhenExpressionNode when = 2;
+  Node else = 3;
+}
+
+message WhenExpressionNode {
+  Node condition = 1;
+  Node value = 2;
+}
+
+message ConstantNode {
   types.v1.Type type = 1;
   bytes value = 2;
 }
 
-message OrderBy {
-  repeated OrderExpression expressions = 1;
+message OrderByNode {
+  Node from = 1;
+  repeated OrderExpressionNode expressions = 2;
 }
 
-message OrderExpression {
+message OrderExpressionNode {
   uint32 direction = 1;
-  Expression expression = 2;
+  Node expression = 2;
 }
 
-message Tuple {
-  repeated Expression expressions = 1;
+message TupleNode {
+  repeated Node expressions = 1;
 }
 
 message VariableExpression {
   uint64 offset = 1;
+  types.v1.Type type = 2;
 }
 
-message Parameter {
+message ValuesClauseNode {
+  repeated Expressions rows = 1;
+}
+
+message Expressions {
+  repeated Node expressions = 1;
+}
+
+message ParameterNode {
   uint32 index = 1;
+}
+
+message DistinctNode {
+  Node from = 1;
+  repeated Node expressions = 2;
+}
+
+message RecordNode {
+  repeated Node columns = 1;
+}
+
+message ReferenceNode {
+  repeated string parts = 1;
+  Node node = 2;
+}
+
+message ValueNode {
+  types.v1.Type type = 1;
 }

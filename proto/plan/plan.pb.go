@@ -23,754 +23,768 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type Literal struct {
-	Columns              []*Expression     `protobuf:"bytes,1,rep,name=columns,proto3" json:"columns,omitempty"`
-	From                 *From             `protobuf:"bytes,2,opt,name=from,proto3" json:"from,omitempty"`
-	Filter               *FilterExpression `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
-	Aggregation          *Aggregation      `protobuf:"bytes,4,opt,name=aggregation,proto3" json:"aggregation,omitempty"`
-	OrderBy              *OrderBy          `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
-	XXX_unrecognized     []byte            `json:"-"`
-	XXX_sizecache        int32             `json:"-"`
+type Node struct {
+	// Types that are valid to be assigned to Plan:
+	//
+	//	*Node_Scanner
+	//	*Node_Column
+	//	*Node_Filter
+	//	*Node_Function
+	//	*Node_Aggregation
+	//	*Node_AndExpression
+	//	*Node_OrExpression
+	//	*Node_ComparisonExpression
+	//	*Node_BinaryExpression
+	//	*Node_CastExpression
+	//	*Node_CaseExpression
+	//	*Node_Constant
+	//	*Node_Tuple
+	//	*Node_Variable
+	//	*Node_OrderBy
+	//	*Node_Values
+	//	*Node_Parameter
+	//	*Node_Distinct
+	//	*Node_Reference
+	//	*Node_Value
+	Plan                 isNode_Plan `protobuf_oneof:"plan"`
+	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
+	XXX_unrecognized     []byte      `json:"-"`
+	XXX_sizecache        int32       `json:"-"`
 }
 
-func (m *Literal) Reset()         { *m = Literal{} }
-func (m *Literal) String() string { return proto.CompactTextString(m) }
-func (*Literal) ProtoMessage()    {}
-func (*Literal) Descriptor() ([]byte, []int) {
+func (m *Node) Reset()         { *m = Node{} }
+func (m *Node) String() string { return proto.CompactTextString(m) }
+func (*Node) ProtoMessage()    {}
+func (*Node) Descriptor() ([]byte, []int) {
 	return fileDescriptor_91877109aacab46f, []int{0}
 }
-func (m *Literal) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Literal.Unmarshal(m, b)
+func (m *Node) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Node.Unmarshal(m, b)
 }
-func (m *Literal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Literal.Marshal(b, m, deterministic)
+func (m *Node) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Node.Marshal(b, m, deterministic)
 }
-func (m *Literal) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Literal.Merge(m, src)
+func (m *Node) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Node.Merge(m, src)
 }
-func (m *Literal) XXX_Size() int {
-	return xxx_messageInfo_Literal.Size(m)
+func (m *Node) XXX_Size() int {
+	return xxx_messageInfo_Node.Size(m)
 }
-func (m *Literal) XXX_DiscardUnknown() {
-	xxx_messageInfo_Literal.DiscardUnknown(m)
+func (m *Node) XXX_DiscardUnknown() {
+	xxx_messageInfo_Node.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_Literal proto.InternalMessageInfo
+var xxx_messageInfo_Node proto.InternalMessageInfo
 
-func (m *Literal) GetColumns() []*Expression {
+type isNode_Plan interface {
+	isNode_Plan()
+}
+
+type Node_Scanner struct {
+	Scanner *ScannerNode `protobuf:"bytes,1,opt,name=scanner,proto3,oneof" json:"scanner,omitempty"`
+}
+type Node_Column struct {
+	Column *ColumnNode `protobuf:"bytes,2,opt,name=column,proto3,oneof" json:"column,omitempty"`
+}
+type Node_Filter struct {
+	Filter *FilterNode `protobuf:"bytes,3,opt,name=filter,proto3,oneof" json:"filter,omitempty"`
+}
+type Node_Function struct {
+	Function *FunctionNode `protobuf:"bytes,4,opt,name=function,proto3,oneof" json:"function,omitempty"`
+}
+type Node_Aggregation struct {
+	Aggregation *AggregationNode `protobuf:"bytes,5,opt,name=aggregation,proto3,oneof" json:"aggregation,omitempty"`
+}
+type Node_AndExpression struct {
+	AndExpression *AndExpressionNode `protobuf:"bytes,7,opt,name=and_expression,json=andExpression,proto3,oneof" json:"and_expression,omitempty"`
+}
+type Node_OrExpression struct {
+	OrExpression *OrExpressionNode `protobuf:"bytes,8,opt,name=or_expression,json=orExpression,proto3,oneof" json:"or_expression,omitempty"`
+}
+type Node_ComparisonExpression struct {
+	ComparisonExpression *ComparisonExpressionNode `protobuf:"bytes,9,opt,name=comparison_expression,json=comparisonExpression,proto3,oneof" json:"comparison_expression,omitempty"`
+}
+type Node_BinaryExpression struct {
+	BinaryExpression *BinaryExpressionNode `protobuf:"bytes,10,opt,name=binary_expression,json=binaryExpression,proto3,oneof" json:"binary_expression,omitempty"`
+}
+type Node_CastExpression struct {
+	CastExpression *CastExpression `protobuf:"bytes,11,opt,name=cast_expression,json=castExpression,proto3,oneof" json:"cast_expression,omitempty"`
+}
+type Node_CaseExpression struct {
+	CaseExpression *CaseExpressionNode `protobuf:"bytes,12,opt,name=case_expression,json=caseExpression,proto3,oneof" json:"case_expression,omitempty"`
+}
+type Node_Constant struct {
+	Constant *ConstantNode `protobuf:"bytes,13,opt,name=constant,proto3,oneof" json:"constant,omitempty"`
+}
+type Node_Tuple struct {
+	Tuple *TupleNode `protobuf:"bytes,18,opt,name=tuple,proto3,oneof" json:"tuple,omitempty"`
+}
+type Node_Variable struct {
+	Variable *VariableExpression `protobuf:"bytes,19,opt,name=variable,proto3,oneof" json:"variable,omitempty"`
+}
+type Node_OrderBy struct {
+	OrderBy *OrderByNode `protobuf:"bytes,20,opt,name=order_by,json=orderBy,proto3,oneof" json:"order_by,omitempty"`
+}
+type Node_Values struct {
+	Values *ValuesClauseNode `protobuf:"bytes,21,opt,name=values,proto3,oneof" json:"values,omitempty"`
+}
+type Node_Parameter struct {
+	Parameter *ParameterNode `protobuf:"bytes,25,opt,name=parameter,proto3,oneof" json:"parameter,omitempty"`
+}
+type Node_Distinct struct {
+	Distinct *DistinctNode `protobuf:"bytes,28,opt,name=distinct,proto3,oneof" json:"distinct,omitempty"`
+}
+type Node_Reference struct {
+	Reference *ReferenceNode `protobuf:"bytes,31,opt,name=reference,proto3,oneof" json:"reference,omitempty"`
+}
+type Node_Value struct {
+	Value *ValueNode `protobuf:"bytes,32,opt,name=value,proto3,oneof" json:"value,omitempty"`
+}
+
+func (*Node_Scanner) isNode_Plan()              {}
+func (*Node_Column) isNode_Plan()               {}
+func (*Node_Filter) isNode_Plan()               {}
+func (*Node_Function) isNode_Plan()             {}
+func (*Node_Aggregation) isNode_Plan()          {}
+func (*Node_AndExpression) isNode_Plan()        {}
+func (*Node_OrExpression) isNode_Plan()         {}
+func (*Node_ComparisonExpression) isNode_Plan() {}
+func (*Node_BinaryExpression) isNode_Plan()     {}
+func (*Node_CastExpression) isNode_Plan()       {}
+func (*Node_CaseExpression) isNode_Plan()       {}
+func (*Node_Constant) isNode_Plan()             {}
+func (*Node_Tuple) isNode_Plan()                {}
+func (*Node_Variable) isNode_Plan()             {}
+func (*Node_OrderBy) isNode_Plan()              {}
+func (*Node_Values) isNode_Plan()               {}
+func (*Node_Parameter) isNode_Plan()            {}
+func (*Node_Distinct) isNode_Plan()             {}
+func (*Node_Reference) isNode_Plan()            {}
+func (*Node_Value) isNode_Plan()                {}
+
+func (m *Node) GetPlan() isNode_Plan {
 	if m != nil {
-		return m.Columns
+		return m.Plan
 	}
 	return nil
 }
 
-func (m *Literal) GetFrom() *From {
-	if m != nil {
-		return m.From
+func (m *Node) GetScanner() *ScannerNode {
+	if x, ok := m.GetPlan().(*Node_Scanner); ok {
+		return x.Scanner
 	}
 	return nil
 }
 
-func (m *Literal) GetFilter() *FilterExpression {
-	if m != nil {
-		return m.Filter
-	}
-	return nil
-}
-
-func (m *Literal) GetAggregation() *Aggregation {
-	if m != nil {
-		return m.Aggregation
-	}
-	return nil
-}
-
-func (m *Literal) GetOrderBy() *OrderBy {
-	if m != nil {
-		return m.OrderBy
-	}
-	return nil
-}
-
-type From struct {
-	Table                string   `protobuf:"bytes,1,opt,name=table,proto3" json:"table,omitempty"`
-	Schema               string   `protobuf:"bytes,2,opt,name=schema,proto3" json:"schema,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *From) Reset()         { *m = From{} }
-func (m *From) String() string { return proto.CompactTextString(m) }
-func (*From) ProtoMessage()    {}
-func (*From) Descriptor() ([]byte, []int) {
-	return fileDescriptor_91877109aacab46f, []int{1}
-}
-func (m *From) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_From.Unmarshal(m, b)
-}
-func (m *From) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_From.Marshal(b, m, deterministic)
-}
-func (m *From) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_From.Merge(m, src)
-}
-func (m *From) XXX_Size() int {
-	return xxx_messageInfo_From.Size(m)
-}
-func (m *From) XXX_DiscardUnknown() {
-	xxx_messageInfo_From.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_From proto.InternalMessageInfo
-
-func (m *From) GetTable() string {
-	if m != nil {
-		return m.Table
-	}
-	return ""
-}
-
-func (m *From) GetSchema() string {
-	if m != nil {
-		return m.Schema
-	}
-	return ""
-}
-
-type Expression struct {
-	// Types that are valid to be assigned to Statement:
-	//
-	//	*Expression_Column
-	//	*Expression_Function
-	//	*Expression_BinaryExpression
-	//	*Expression_Constant
-	//	*Expression_Tuple
-	//	*Expression_Variable
-	//	*Expression_Parameter
-	//	*Expression_CastExpression
-	Statement            isExpression_Statement `protobuf_oneof:"statement"`
-	XXX_NoUnkeyedLiteral struct{}               `json:"-"`
-	XXX_unrecognized     []byte                 `json:"-"`
-	XXX_sizecache        int32                  `json:"-"`
-}
-
-func (m *Expression) Reset()         { *m = Expression{} }
-func (m *Expression) String() string { return proto.CompactTextString(m) }
-func (*Expression) ProtoMessage()    {}
-func (*Expression) Descriptor() ([]byte, []int) {
-	return fileDescriptor_91877109aacab46f, []int{2}
-}
-func (m *Expression) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Expression.Unmarshal(m, b)
-}
-func (m *Expression) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Expression.Marshal(b, m, deterministic)
-}
-func (m *Expression) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Expression.Merge(m, src)
-}
-func (m *Expression) XXX_Size() int {
-	return xxx_messageInfo_Expression.Size(m)
-}
-func (m *Expression) XXX_DiscardUnknown() {
-	xxx_messageInfo_Expression.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Expression proto.InternalMessageInfo
-
-type isExpression_Statement interface {
-	isExpression_Statement()
-}
-
-type Expression_Column struct {
-	Column *Column `protobuf:"bytes,1,opt,name=column,proto3,oneof" json:"column,omitempty"`
-}
-type Expression_Function struct {
-	Function *Function `protobuf:"bytes,2,opt,name=function,proto3,oneof" json:"function,omitempty"`
-}
-type Expression_BinaryExpression struct {
-	BinaryExpression *BinaryExpression `protobuf:"bytes,3,opt,name=binary_expression,json=binaryExpression,proto3,oneof" json:"binary_expression,omitempty"`
-}
-type Expression_Constant struct {
-	Constant *Constant `protobuf:"bytes,4,opt,name=constant,proto3,oneof" json:"constant,omitempty"`
-}
-type Expression_Tuple struct {
-	Tuple *Tuple `protobuf:"bytes,5,opt,name=tuple,proto3,oneof" json:"tuple,omitempty"`
-}
-type Expression_Variable struct {
-	Variable *VariableExpression `protobuf:"bytes,6,opt,name=variable,proto3,oneof" json:"variable,omitempty"`
-}
-type Expression_Parameter struct {
-	Parameter *Parameter `protobuf:"bytes,7,opt,name=parameter,proto3,oneof" json:"parameter,omitempty"`
-}
-type Expression_CastExpression struct {
-	CastExpression *CastExpression `protobuf:"bytes,8,opt,name=cast_expression,json=castExpression,proto3,oneof" json:"cast_expression,omitempty"`
-}
-
-func (*Expression_Column) isExpression_Statement()           {}
-func (*Expression_Function) isExpression_Statement()         {}
-func (*Expression_BinaryExpression) isExpression_Statement() {}
-func (*Expression_Constant) isExpression_Statement()         {}
-func (*Expression_Tuple) isExpression_Statement()            {}
-func (*Expression_Variable) isExpression_Statement()         {}
-func (*Expression_Parameter) isExpression_Statement()        {}
-func (*Expression_CastExpression) isExpression_Statement()   {}
-
-func (m *Expression) GetStatement() isExpression_Statement {
-	if m != nil {
-		return m.Statement
-	}
-	return nil
-}
-
-func (m *Expression) GetColumn() *Column {
-	if x, ok := m.GetStatement().(*Expression_Column); ok {
+func (m *Node) GetColumn() *ColumnNode {
+	if x, ok := m.GetPlan().(*Node_Column); ok {
 		return x.Column
 	}
 	return nil
 }
 
-func (m *Expression) GetFunction() *Function {
-	if x, ok := m.GetStatement().(*Expression_Function); ok {
+func (m *Node) GetFilter() *FilterNode {
+	if x, ok := m.GetPlan().(*Node_Filter); ok {
+		return x.Filter
+	}
+	return nil
+}
+
+func (m *Node) GetFunction() *FunctionNode {
+	if x, ok := m.GetPlan().(*Node_Function); ok {
 		return x.Function
 	}
 	return nil
 }
 
-func (m *Expression) GetBinaryExpression() *BinaryExpression {
-	if x, ok := m.GetStatement().(*Expression_BinaryExpression); ok {
+func (m *Node) GetAggregation() *AggregationNode {
+	if x, ok := m.GetPlan().(*Node_Aggregation); ok {
+		return x.Aggregation
+	}
+	return nil
+}
+
+func (m *Node) GetAndExpression() *AndExpressionNode {
+	if x, ok := m.GetPlan().(*Node_AndExpression); ok {
+		return x.AndExpression
+	}
+	return nil
+}
+
+func (m *Node) GetOrExpression() *OrExpressionNode {
+	if x, ok := m.GetPlan().(*Node_OrExpression); ok {
+		return x.OrExpression
+	}
+	return nil
+}
+
+func (m *Node) GetComparisonExpression() *ComparisonExpressionNode {
+	if x, ok := m.GetPlan().(*Node_ComparisonExpression); ok {
+		return x.ComparisonExpression
+	}
+	return nil
+}
+
+func (m *Node) GetBinaryExpression() *BinaryExpressionNode {
+	if x, ok := m.GetPlan().(*Node_BinaryExpression); ok {
 		return x.BinaryExpression
 	}
 	return nil
 }
 
-func (m *Expression) GetConstant() *Constant {
-	if x, ok := m.GetStatement().(*Expression_Constant); ok {
-		return x.Constant
-	}
-	return nil
-}
-
-func (m *Expression) GetTuple() *Tuple {
-	if x, ok := m.GetStatement().(*Expression_Tuple); ok {
-		return x.Tuple
-	}
-	return nil
-}
-
-func (m *Expression) GetVariable() *VariableExpression {
-	if x, ok := m.GetStatement().(*Expression_Variable); ok {
-		return x.Variable
-	}
-	return nil
-}
-
-func (m *Expression) GetParameter() *Parameter {
-	if x, ok := m.GetStatement().(*Expression_Parameter); ok {
-		return x.Parameter
-	}
-	return nil
-}
-
-func (m *Expression) GetCastExpression() *CastExpression {
-	if x, ok := m.GetStatement().(*Expression_CastExpression); ok {
+func (m *Node) GetCastExpression() *CastExpression {
+	if x, ok := m.GetPlan().(*Node_CastExpression); ok {
 		return x.CastExpression
 	}
 	return nil
 }
 
+func (m *Node) GetCaseExpression() *CaseExpressionNode {
+	if x, ok := m.GetPlan().(*Node_CaseExpression); ok {
+		return x.CaseExpression
+	}
+	return nil
+}
+
+func (m *Node) GetConstant() *ConstantNode {
+	if x, ok := m.GetPlan().(*Node_Constant); ok {
+		return x.Constant
+	}
+	return nil
+}
+
+func (m *Node) GetTuple() *TupleNode {
+	if x, ok := m.GetPlan().(*Node_Tuple); ok {
+		return x.Tuple
+	}
+	return nil
+}
+
+func (m *Node) GetVariable() *VariableExpression {
+	if x, ok := m.GetPlan().(*Node_Variable); ok {
+		return x.Variable
+	}
+	return nil
+}
+
+func (m *Node) GetOrderBy() *OrderByNode {
+	if x, ok := m.GetPlan().(*Node_OrderBy); ok {
+		return x.OrderBy
+	}
+	return nil
+}
+
+func (m *Node) GetValues() *ValuesClauseNode {
+	if x, ok := m.GetPlan().(*Node_Values); ok {
+		return x.Values
+	}
+	return nil
+}
+
+func (m *Node) GetParameter() *ParameterNode {
+	if x, ok := m.GetPlan().(*Node_Parameter); ok {
+		return x.Parameter
+	}
+	return nil
+}
+
+func (m *Node) GetDistinct() *DistinctNode {
+	if x, ok := m.GetPlan().(*Node_Distinct); ok {
+		return x.Distinct
+	}
+	return nil
+}
+
+func (m *Node) GetReference() *ReferenceNode {
+	if x, ok := m.GetPlan().(*Node_Reference); ok {
+		return x.Reference
+	}
+	return nil
+}
+
+func (m *Node) GetValue() *ValueNode {
+	if x, ok := m.GetPlan().(*Node_Value); ok {
+		return x.Value
+	}
+	return nil
+}
+
 // XXX_OneofWrappers is for the internal use of the proto package.
-func (*Expression) XXX_OneofWrappers() []interface{} {
+func (*Node) XXX_OneofWrappers() []interface{} {
 	return []interface{}{
-		(*Expression_Column)(nil),
-		(*Expression_Function)(nil),
-		(*Expression_BinaryExpression)(nil),
-		(*Expression_Constant)(nil),
-		(*Expression_Tuple)(nil),
-		(*Expression_Variable)(nil),
-		(*Expression_Parameter)(nil),
-		(*Expression_CastExpression)(nil),
+		(*Node_Scanner)(nil),
+		(*Node_Column)(nil),
+		(*Node_Filter)(nil),
+		(*Node_Function)(nil),
+		(*Node_Aggregation)(nil),
+		(*Node_AndExpression)(nil),
+		(*Node_OrExpression)(nil),
+		(*Node_ComparisonExpression)(nil),
+		(*Node_BinaryExpression)(nil),
+		(*Node_CastExpression)(nil),
+		(*Node_CaseExpression)(nil),
+		(*Node_Constant)(nil),
+		(*Node_Tuple)(nil),
+		(*Node_Variable)(nil),
+		(*Node_OrderBy)(nil),
+		(*Node_Values)(nil),
+		(*Node_Parameter)(nil),
+		(*Node_Distinct)(nil),
+		(*Node_Reference)(nil),
+		(*Node_Value)(nil),
 	}
 }
 
-type Column struct {
-	Name                 string   `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Table                string   `protobuf:"bytes,2,opt,name=table,proto3" json:"table,omitempty"`
-	Schema               string   `protobuf:"bytes,3,opt,name=schema,proto3" json:"schema,omitempty"`
-	Catalog              string   `protobuf:"bytes,4,opt,name=catalog,proto3" json:"catalog,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+type ColumnNode struct {
+	ID                   uint64           `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name                 string           `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Table                string           `protobuf:"bytes,3,opt,name=table,proto3" json:"table,omitempty"`
+	Schema               string           `protobuf:"bytes,4,opt,name=schema,proto3" json:"schema,omitempty"`
+	Catalog              string           `protobuf:"bytes,5,opt,name=catalog,proto3" json:"catalog,omitempty"`
+	Node                 *Node            `protobuf:"bytes,6,opt,name=node,proto3" json:"node,omitempty"`
+	Operators            []*node.Operator `protobuf:"bytes,7,rep,name=operators,proto3" json:"operators,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
+	XXX_unrecognized     []byte           `json:"-"`
+	XXX_sizecache        int32            `json:"-"`
 }
 
-func (m *Column) Reset()         { *m = Column{} }
-func (m *Column) String() string { return proto.CompactTextString(m) }
-func (*Column) ProtoMessage()    {}
-func (*Column) Descriptor() ([]byte, []int) {
-	return fileDescriptor_91877109aacab46f, []int{3}
+func (m *ColumnNode) Reset()         { *m = ColumnNode{} }
+func (m *ColumnNode) String() string { return proto.CompactTextString(m) }
+func (*ColumnNode) ProtoMessage()    {}
+func (*ColumnNode) Descriptor() ([]byte, []int) {
+	return fileDescriptor_91877109aacab46f, []int{1}
 }
-func (m *Column) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Column.Unmarshal(m, b)
+func (m *ColumnNode) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ColumnNode.Unmarshal(m, b)
 }
-func (m *Column) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Column.Marshal(b, m, deterministic)
+func (m *ColumnNode) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ColumnNode.Marshal(b, m, deterministic)
 }
-func (m *Column) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Column.Merge(m, src)
+func (m *ColumnNode) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ColumnNode.Merge(m, src)
 }
-func (m *Column) XXX_Size() int {
-	return xxx_messageInfo_Column.Size(m)
+func (m *ColumnNode) XXX_Size() int {
+	return xxx_messageInfo_ColumnNode.Size(m)
 }
-func (m *Column) XXX_DiscardUnknown() {
-	xxx_messageInfo_Column.DiscardUnknown(m)
+func (m *ColumnNode) XXX_DiscardUnknown() {
+	xxx_messageInfo_ColumnNode.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_Column proto.InternalMessageInfo
+var xxx_messageInfo_ColumnNode proto.InternalMessageInfo
 
-func (m *Column) GetName() string {
+func (m *ColumnNode) GetID() uint64 {
+	if m != nil {
+		return m.ID
+	}
+	return 0
+}
+
+func (m *ColumnNode) GetName() string {
 	if m != nil {
 		return m.Name
 	}
 	return ""
 }
 
-func (m *Column) GetTable() string {
+func (m *ColumnNode) GetTable() string {
 	if m != nil {
 		return m.Table
 	}
 	return ""
 }
 
-func (m *Column) GetSchema() string {
+func (m *ColumnNode) GetSchema() string {
 	if m != nil {
 		return m.Schema
 	}
 	return ""
 }
 
-func (m *Column) GetCatalog() string {
+func (m *ColumnNode) GetCatalog() string {
 	if m != nil {
 		return m.Catalog
 	}
 	return ""
 }
 
-type FilterExpression struct {
-	// Types that are valid to be assigned to Condition:
-	//
-	//	*FilterExpression_Expression
-	//	*FilterExpression_AndExpression
-	//	*FilterExpression_OrExpression
-	//	*FilterExpression_ComparisonExpression
-	Condition            isFilterExpression_Condition `protobuf_oneof:"condition"`
-	XXX_NoUnkeyedLiteral struct{}                     `json:"-"`
-	XXX_unrecognized     []byte                       `json:"-"`
-	XXX_sizecache        int32                        `json:"-"`
-}
-
-func (m *FilterExpression) Reset()         { *m = FilterExpression{} }
-func (m *FilterExpression) String() string { return proto.CompactTextString(m) }
-func (*FilterExpression) ProtoMessage()    {}
-func (*FilterExpression) Descriptor() ([]byte, []int) {
-	return fileDescriptor_91877109aacab46f, []int{4}
-}
-func (m *FilterExpression) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_FilterExpression.Unmarshal(m, b)
-}
-func (m *FilterExpression) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_FilterExpression.Marshal(b, m, deterministic)
-}
-func (m *FilterExpression) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_FilterExpression.Merge(m, src)
-}
-func (m *FilterExpression) XXX_Size() int {
-	return xxx_messageInfo_FilterExpression.Size(m)
-}
-func (m *FilterExpression) XXX_DiscardUnknown() {
-	xxx_messageInfo_FilterExpression.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_FilterExpression proto.InternalMessageInfo
-
-type isFilterExpression_Condition interface {
-	isFilterExpression_Condition()
-}
-
-type FilterExpression_Expression struct {
-	Expression *Expression `protobuf:"bytes,1,opt,name=expression,proto3,oneof" json:"expression,omitempty"`
-}
-type FilterExpression_AndExpression struct {
-	AndExpression *AndExpression `protobuf:"bytes,2,opt,name=and_expression,json=andExpression,proto3,oneof" json:"and_expression,omitempty"`
-}
-type FilterExpression_OrExpression struct {
-	OrExpression *OrExpression `protobuf:"bytes,3,opt,name=or_expression,json=orExpression,proto3,oneof" json:"or_expression,omitempty"`
-}
-type FilterExpression_ComparisonExpression struct {
-	ComparisonExpression *ComparisonExpression `protobuf:"bytes,4,opt,name=comparison_expression,json=comparisonExpression,proto3,oneof" json:"comparison_expression,omitempty"`
-}
-
-func (*FilterExpression_Expression) isFilterExpression_Condition()           {}
-func (*FilterExpression_AndExpression) isFilterExpression_Condition()        {}
-func (*FilterExpression_OrExpression) isFilterExpression_Condition()         {}
-func (*FilterExpression_ComparisonExpression) isFilterExpression_Condition() {}
-
-func (m *FilterExpression) GetCondition() isFilterExpression_Condition {
+func (m *ColumnNode) GetNode() *Node {
 	if m != nil {
-		return m.Condition
+		return m.Node
 	}
 	return nil
 }
 
-func (m *FilterExpression) GetExpression() *Expression {
-	if x, ok := m.GetCondition().(*FilterExpression_Expression); ok {
-		return x.Expression
+func (m *ColumnNode) GetOperators() []*node.Operator {
+	if m != nil {
+		return m.Operators
 	}
 	return nil
 }
 
-func (m *FilterExpression) GetAndExpression() *AndExpression {
-	if x, ok := m.GetCondition().(*FilterExpression_AndExpression); ok {
-		return x.AndExpression
+type ScannerNode struct {
+	Table                *node.Table      `protobuf:"bytes,1,opt,name=table,proto3" json:"table,omitempty"`
+	Expressions          []*Node          `protobuf:"bytes,2,rep,name=expressions,proto3" json:"expressions,omitempty"`
+	From                 *Node            `protobuf:"bytes,3,opt,name=from,proto3" json:"from,omitempty"`
+	Operators            []*node.Operator `protobuf:"bytes,4,rep,name=operators,proto3" json:"operators,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
+	XXX_unrecognized     []byte           `json:"-"`
+	XXX_sizecache        int32            `json:"-"`
+}
+
+func (m *ScannerNode) Reset()         { *m = ScannerNode{} }
+func (m *ScannerNode) String() string { return proto.CompactTextString(m) }
+func (*ScannerNode) ProtoMessage()    {}
+func (*ScannerNode) Descriptor() ([]byte, []int) {
+	return fileDescriptor_91877109aacab46f, []int{2}
+}
+func (m *ScannerNode) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ScannerNode.Unmarshal(m, b)
+}
+func (m *ScannerNode) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ScannerNode.Marshal(b, m, deterministic)
+}
+func (m *ScannerNode) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ScannerNode.Merge(m, src)
+}
+func (m *ScannerNode) XXX_Size() int {
+	return xxx_messageInfo_ScannerNode.Size(m)
+}
+func (m *ScannerNode) XXX_DiscardUnknown() {
+	xxx_messageInfo_ScannerNode.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ScannerNode proto.InternalMessageInfo
+
+func (m *ScannerNode) GetTable() *node.Table {
+	if m != nil {
+		return m.Table
 	}
 	return nil
 }
 
-func (m *FilterExpression) GetOrExpression() *OrExpression {
-	if x, ok := m.GetCondition().(*FilterExpression_OrExpression); ok {
-		return x.OrExpression
-	}
-	return nil
-}
-
-func (m *FilterExpression) GetComparisonExpression() *ComparisonExpression {
-	if x, ok := m.GetCondition().(*FilterExpression_ComparisonExpression); ok {
-		return x.ComparisonExpression
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the proto package.
-func (*FilterExpression) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*FilterExpression_Expression)(nil),
-		(*FilterExpression_AndExpression)(nil),
-		(*FilterExpression_OrExpression)(nil),
-		(*FilterExpression_ComparisonExpression)(nil),
-	}
-}
-
-type Function struct {
-	Expressions          []*Expression `protobuf:"bytes,1,rep,name=expressions,proto3" json:"expressions,omitempty"`
-	Name                 string        `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Distinct             bool          `protobuf:"varint,3,opt,name=distinct,proto3" json:"distinct,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
-	XXX_unrecognized     []byte        `json:"-"`
-	XXX_sizecache        int32         `json:"-"`
-}
-
-func (m *Function) Reset()         { *m = Function{} }
-func (m *Function) String() string { return proto.CompactTextString(m) }
-func (*Function) ProtoMessage()    {}
-func (*Function) Descriptor() ([]byte, []int) {
-	return fileDescriptor_91877109aacab46f, []int{5}
-}
-func (m *Function) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Function.Unmarshal(m, b)
-}
-func (m *Function) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Function.Marshal(b, m, deterministic)
-}
-func (m *Function) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Function.Merge(m, src)
-}
-func (m *Function) XXX_Size() int {
-	return xxx_messageInfo_Function.Size(m)
-}
-func (m *Function) XXX_DiscardUnknown() {
-	xxx_messageInfo_Function.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Function proto.InternalMessageInfo
-
-func (m *Function) GetExpressions() []*Expression {
+func (m *ScannerNode) GetExpressions() []*Node {
 	if m != nil {
 		return m.Expressions
 	}
 	return nil
 }
 
-func (m *Function) GetName() string {
+func (m *ScannerNode) GetFrom() *Node {
+	if m != nil {
+		return m.From
+	}
+	return nil
+}
+
+func (m *ScannerNode) GetOperators() []*node.Operator {
+	if m != nil {
+		return m.Operators
+	}
+	return nil
+}
+
+type FilterNode struct {
+	Conditions           *Node    `protobuf:"bytes,1,opt,name=conditions,proto3" json:"conditions,omitempty"`
+	From                 *Node    `protobuf:"bytes,2,opt,name=from,proto3" json:"from,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *FilterNode) Reset()         { *m = FilterNode{} }
+func (m *FilterNode) String() string { return proto.CompactTextString(m) }
+func (*FilterNode) ProtoMessage()    {}
+func (*FilterNode) Descriptor() ([]byte, []int) {
+	return fileDescriptor_91877109aacab46f, []int{3}
+}
+func (m *FilterNode) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_FilterNode.Unmarshal(m, b)
+}
+func (m *FilterNode) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_FilterNode.Marshal(b, m, deterministic)
+}
+func (m *FilterNode) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_FilterNode.Merge(m, src)
+}
+func (m *FilterNode) XXX_Size() int {
+	return xxx_messageInfo_FilterNode.Size(m)
+}
+func (m *FilterNode) XXX_DiscardUnknown() {
+	xxx_messageInfo_FilterNode.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_FilterNode proto.InternalMessageInfo
+
+func (m *FilterNode) GetConditions() *Node {
+	if m != nil {
+		return m.Conditions
+	}
+	return nil
+}
+
+func (m *FilterNode) GetFrom() *Node {
+	if m != nil {
+		return m.From
+	}
+	return nil
+}
+
+type FunctionNode struct {
+	Expressions          []*Node  `protobuf:"bytes,1,rep,name=expressions,proto3" json:"expressions,omitempty"`
+	Name                 string   `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Distinct             bool     `protobuf:"varint,3,opt,name=distinct,proto3" json:"distinct,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *FunctionNode) Reset()         { *m = FunctionNode{} }
+func (m *FunctionNode) String() string { return proto.CompactTextString(m) }
+func (*FunctionNode) ProtoMessage()    {}
+func (*FunctionNode) Descriptor() ([]byte, []int) {
+	return fileDescriptor_91877109aacab46f, []int{4}
+}
+func (m *FunctionNode) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_FunctionNode.Unmarshal(m, b)
+}
+func (m *FunctionNode) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_FunctionNode.Marshal(b, m, deterministic)
+}
+func (m *FunctionNode) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_FunctionNode.Merge(m, src)
+}
+func (m *FunctionNode) XXX_Size() int {
+	return xxx_messageInfo_FunctionNode.Size(m)
+}
+func (m *FunctionNode) XXX_DiscardUnknown() {
+	xxx_messageInfo_FunctionNode.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_FunctionNode proto.InternalMessageInfo
+
+func (m *FunctionNode) GetExpressions() []*Node {
+	if m != nil {
+		return m.Expressions
+	}
+	return nil
+}
+
+func (m *FunctionNode) GetName() string {
 	if m != nil {
 		return m.Name
 	}
 	return ""
 }
 
-func (m *Function) GetDistinct() bool {
+func (m *FunctionNode) GetDistinct() bool {
 	if m != nil {
 		return m.Distinct
 	}
 	return false
 }
 
-type Aggregation struct {
-	GroupBy              []*Expression `protobuf:"bytes,1,rep,name=group_by,json=groupBy,proto3" json:"group_by,omitempty"`
-	Having               *Expression   `protobuf:"bytes,2,opt,name=having,proto3" json:"having,omitempty"`
-	Expressions          []*Expression `protobuf:"bytes,3,rep,name=expressions,proto3" json:"expressions,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
-	XXX_unrecognized     []byte        `json:"-"`
-	XXX_sizecache        int32         `json:"-"`
+type AggregationNode struct {
+	From                 *Node    `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	GroupBy              []*Node  `protobuf:"bytes,2,rep,name=group_by,json=groupBy,proto3" json:"group_by,omitempty"`
+	Having               *Node    `protobuf:"bytes,3,opt,name=having,proto3" json:"having,omitempty"`
+	Expressions          []*Node  `protobuf:"bytes,4,rep,name=expressions,proto3" json:"expressions,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *Aggregation) Reset()         { *m = Aggregation{} }
-func (m *Aggregation) String() string { return proto.CompactTextString(m) }
-func (*Aggregation) ProtoMessage()    {}
-func (*Aggregation) Descriptor() ([]byte, []int) {
-	return fileDescriptor_91877109aacab46f, []int{6}
+func (m *AggregationNode) Reset()         { *m = AggregationNode{} }
+func (m *AggregationNode) String() string { return proto.CompactTextString(m) }
+func (*AggregationNode) ProtoMessage()    {}
+func (*AggregationNode) Descriptor() ([]byte, []int) {
+	return fileDescriptor_91877109aacab46f, []int{5}
 }
-func (m *Aggregation) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Aggregation.Unmarshal(m, b)
+func (m *AggregationNode) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_AggregationNode.Unmarshal(m, b)
 }
-func (m *Aggregation) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Aggregation.Marshal(b, m, deterministic)
+func (m *AggregationNode) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_AggregationNode.Marshal(b, m, deterministic)
 }
-func (m *Aggregation) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Aggregation.Merge(m, src)
+func (m *AggregationNode) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AggregationNode.Merge(m, src)
 }
-func (m *Aggregation) XXX_Size() int {
-	return xxx_messageInfo_Aggregation.Size(m)
+func (m *AggregationNode) XXX_Size() int {
+	return xxx_messageInfo_AggregationNode.Size(m)
 }
-func (m *Aggregation) XXX_DiscardUnknown() {
-	xxx_messageInfo_Aggregation.DiscardUnknown(m)
+func (m *AggregationNode) XXX_DiscardUnknown() {
+	xxx_messageInfo_AggregationNode.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_Aggregation proto.InternalMessageInfo
+var xxx_messageInfo_AggregationNode proto.InternalMessageInfo
 
-func (m *Aggregation) GetGroupBy() []*Expression {
+func (m *AggregationNode) GetFrom() *Node {
+	if m != nil {
+		return m.From
+	}
+	return nil
+}
+
+func (m *AggregationNode) GetGroupBy() []*Node {
 	if m != nil {
 		return m.GroupBy
 	}
 	return nil
 }
 
-func (m *Aggregation) GetHaving() *Expression {
+func (m *AggregationNode) GetHaving() *Node {
 	if m != nil {
 		return m.Having
 	}
 	return nil
 }
 
-func (m *Aggregation) GetExpressions() []*Expression {
+func (m *AggregationNode) GetExpressions() []*Node {
 	if m != nil {
 		return m.Expressions
 	}
 	return nil
 }
 
-type AndExpression struct {
-	Left                 *FilterExpression `protobuf:"bytes,1,opt,name=left,proto3" json:"left,omitempty"`
-	Right                *FilterExpression `protobuf:"bytes,2,opt,name=right,proto3" json:"right,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
-	XXX_unrecognized     []byte            `json:"-"`
-	XXX_sizecache        int32             `json:"-"`
+type AndExpressionNode struct {
+	Left                 *Node    `protobuf:"bytes,1,opt,name=left,proto3" json:"left,omitempty"`
+	Right                *Node    `protobuf:"bytes,2,opt,name=right,proto3" json:"right,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *AndExpression) Reset()         { *m = AndExpression{} }
-func (m *AndExpression) String() string { return proto.CompactTextString(m) }
-func (*AndExpression) ProtoMessage()    {}
-func (*AndExpression) Descriptor() ([]byte, []int) {
+func (m *AndExpressionNode) Reset()         { *m = AndExpressionNode{} }
+func (m *AndExpressionNode) String() string { return proto.CompactTextString(m) }
+func (*AndExpressionNode) ProtoMessage()    {}
+func (*AndExpressionNode) Descriptor() ([]byte, []int) {
+	return fileDescriptor_91877109aacab46f, []int{6}
+}
+func (m *AndExpressionNode) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_AndExpressionNode.Unmarshal(m, b)
+}
+func (m *AndExpressionNode) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_AndExpressionNode.Marshal(b, m, deterministic)
+}
+func (m *AndExpressionNode) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AndExpressionNode.Merge(m, src)
+}
+func (m *AndExpressionNode) XXX_Size() int {
+	return xxx_messageInfo_AndExpressionNode.Size(m)
+}
+func (m *AndExpressionNode) XXX_DiscardUnknown() {
+	xxx_messageInfo_AndExpressionNode.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_AndExpressionNode proto.InternalMessageInfo
+
+func (m *AndExpressionNode) GetLeft() *Node {
+	if m != nil {
+		return m.Left
+	}
+	return nil
+}
+
+func (m *AndExpressionNode) GetRight() *Node {
+	if m != nil {
+		return m.Right
+	}
+	return nil
+}
+
+type OrExpressionNode struct {
+	Left                 *Node    `protobuf:"bytes,1,opt,name=left,proto3" json:"left,omitempty"`
+	Right                *Node    `protobuf:"bytes,2,opt,name=right,proto3" json:"right,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *OrExpressionNode) Reset()         { *m = OrExpressionNode{} }
+func (m *OrExpressionNode) String() string { return proto.CompactTextString(m) }
+func (*OrExpressionNode) ProtoMessage()    {}
+func (*OrExpressionNode) Descriptor() ([]byte, []int) {
 	return fileDescriptor_91877109aacab46f, []int{7}
 }
-func (m *AndExpression) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_AndExpression.Unmarshal(m, b)
+func (m *OrExpressionNode) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_OrExpressionNode.Unmarshal(m, b)
 }
-func (m *AndExpression) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_AndExpression.Marshal(b, m, deterministic)
+func (m *OrExpressionNode) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_OrExpressionNode.Marshal(b, m, deterministic)
 }
-func (m *AndExpression) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AndExpression.Merge(m, src)
+func (m *OrExpressionNode) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_OrExpressionNode.Merge(m, src)
 }
-func (m *AndExpression) XXX_Size() int {
-	return xxx_messageInfo_AndExpression.Size(m)
+func (m *OrExpressionNode) XXX_Size() int {
+	return xxx_messageInfo_OrExpressionNode.Size(m)
 }
-func (m *AndExpression) XXX_DiscardUnknown() {
-	xxx_messageInfo_AndExpression.DiscardUnknown(m)
+func (m *OrExpressionNode) XXX_DiscardUnknown() {
+	xxx_messageInfo_OrExpressionNode.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_AndExpression proto.InternalMessageInfo
+var xxx_messageInfo_OrExpressionNode proto.InternalMessageInfo
 
-func (m *AndExpression) GetLeft() *FilterExpression {
+func (m *OrExpressionNode) GetLeft() *Node {
 	if m != nil {
 		return m.Left
 	}
 	return nil
 }
 
-func (m *AndExpression) GetRight() *FilterExpression {
+func (m *OrExpressionNode) GetRight() *Node {
 	if m != nil {
 		return m.Right
 	}
 	return nil
 }
 
-type OrExpression struct {
-	Left                 *FilterExpression `protobuf:"bytes,1,opt,name=left,proto3" json:"left,omitempty"`
-	Right                *FilterExpression `protobuf:"bytes,2,opt,name=right,proto3" json:"right,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
-	XXX_unrecognized     []byte            `json:"-"`
-	XXX_sizecache        int32             `json:"-"`
-}
-
-func (m *OrExpression) Reset()         { *m = OrExpression{} }
-func (m *OrExpression) String() string { return proto.CompactTextString(m) }
-func (*OrExpression) ProtoMessage()    {}
-func (*OrExpression) Descriptor() ([]byte, []int) {
-	return fileDescriptor_91877109aacab46f, []int{8}
-}
-func (m *OrExpression) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_OrExpression.Unmarshal(m, b)
-}
-func (m *OrExpression) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_OrExpression.Marshal(b, m, deterministic)
-}
-func (m *OrExpression) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_OrExpression.Merge(m, src)
-}
-func (m *OrExpression) XXX_Size() int {
-	return xxx_messageInfo_OrExpression.Size(m)
-}
-func (m *OrExpression) XXX_DiscardUnknown() {
-	xxx_messageInfo_OrExpression.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_OrExpression proto.InternalMessageInfo
-
-func (m *OrExpression) GetLeft() *FilterExpression {
-	if m != nil {
-		return m.Left
-	}
-	return nil
-}
-
-func (m *OrExpression) GetRight() *FilterExpression {
-	if m != nil {
-		return m.Right
-	}
-	return nil
-}
-
-type ComparisonExpression struct {
-	Operator             node.OperatorStatement `protobuf:"varint,1,opt,name=operator,proto3,enum=cloudproud.lunodb.node.v1.OperatorStatement" json:"operator,omitempty"`
-	Left                 *FilterExpression      `protobuf:"bytes,2,opt,name=left,proto3" json:"left,omitempty"`
-	Right                *FilterExpression      `protobuf:"bytes,3,opt,name=right,proto3" json:"right,omitempty"`
-	SubOperator          node.OperatorStatement `protobuf:"varint,4,opt,name=sub_operator,json=subOperator,proto3,enum=cloudproud.lunodb.node.v1.OperatorStatement" json:"sub_operator,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}               `json:"-"`
-	XXX_unrecognized     []byte                 `json:"-"`
-	XXX_sizecache        int32                  `json:"-"`
-}
-
-func (m *ComparisonExpression) Reset()         { *m = ComparisonExpression{} }
-func (m *ComparisonExpression) String() string { return proto.CompactTextString(m) }
-func (*ComparisonExpression) ProtoMessage()    {}
-func (*ComparisonExpression) Descriptor() ([]byte, []int) {
-	return fileDescriptor_91877109aacab46f, []int{9}
-}
-func (m *ComparisonExpression) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ComparisonExpression.Unmarshal(m, b)
-}
-func (m *ComparisonExpression) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ComparisonExpression.Marshal(b, m, deterministic)
-}
-func (m *ComparisonExpression) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ComparisonExpression.Merge(m, src)
-}
-func (m *ComparisonExpression) XXX_Size() int {
-	return xxx_messageInfo_ComparisonExpression.Size(m)
-}
-func (m *ComparisonExpression) XXX_DiscardUnknown() {
-	xxx_messageInfo_ComparisonExpression.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ComparisonExpression proto.InternalMessageInfo
-
-func (m *ComparisonExpression) GetOperator() node.OperatorStatement {
-	if m != nil {
-		return m.Operator
-	}
-	return node.OperatorUnknown
-}
-
-func (m *ComparisonExpression) GetLeft() *FilterExpression {
-	if m != nil {
-		return m.Left
-	}
-	return nil
-}
-
-func (m *ComparisonExpression) GetRight() *FilterExpression {
-	if m != nil {
-		return m.Right
-	}
-	return nil
-}
-
-func (m *ComparisonExpression) GetSubOperator() node.OperatorStatement {
-	if m != nil {
-		return m.SubOperator
-	}
-	return node.OperatorUnknown
-}
-
-type BinaryExpression struct {
+type BinaryExpressionNode struct {
 	Operator             node.BinaryStatement `protobuf:"varint,1,opt,name=operator,proto3,enum=cloudproud.lunodb.node.v1.BinaryStatement" json:"operator,omitempty"`
-	Left                 *Expression          `protobuf:"bytes,2,opt,name=left,proto3" json:"left,omitempty"`
-	Right                *Expression          `protobuf:"bytes,3,opt,name=right,proto3" json:"right,omitempty"`
+	Left                 *Node                `protobuf:"bytes,2,opt,name=left,proto3" json:"left,omitempty"`
+	Right                *Node                `protobuf:"bytes,3,opt,name=right,proto3" json:"right,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
 	XXX_unrecognized     []byte               `json:"-"`
 	XXX_sizecache        int32                `json:"-"`
 }
 
-func (m *BinaryExpression) Reset()         { *m = BinaryExpression{} }
-func (m *BinaryExpression) String() string { return proto.CompactTextString(m) }
-func (*BinaryExpression) ProtoMessage()    {}
-func (*BinaryExpression) Descriptor() ([]byte, []int) {
-	return fileDescriptor_91877109aacab46f, []int{10}
+func (m *BinaryExpressionNode) Reset()         { *m = BinaryExpressionNode{} }
+func (m *BinaryExpressionNode) String() string { return proto.CompactTextString(m) }
+func (*BinaryExpressionNode) ProtoMessage()    {}
+func (*BinaryExpressionNode) Descriptor() ([]byte, []int) {
+	return fileDescriptor_91877109aacab46f, []int{8}
 }
-func (m *BinaryExpression) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_BinaryExpression.Unmarshal(m, b)
+func (m *BinaryExpressionNode) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_BinaryExpressionNode.Unmarshal(m, b)
 }
-func (m *BinaryExpression) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_BinaryExpression.Marshal(b, m, deterministic)
+func (m *BinaryExpressionNode) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_BinaryExpressionNode.Marshal(b, m, deterministic)
 }
-func (m *BinaryExpression) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_BinaryExpression.Merge(m, src)
+func (m *BinaryExpressionNode) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BinaryExpressionNode.Merge(m, src)
 }
-func (m *BinaryExpression) XXX_Size() int {
-	return xxx_messageInfo_BinaryExpression.Size(m)
+func (m *BinaryExpressionNode) XXX_Size() int {
+	return xxx_messageInfo_BinaryExpressionNode.Size(m)
 }
-func (m *BinaryExpression) XXX_DiscardUnknown() {
-	xxx_messageInfo_BinaryExpression.DiscardUnknown(m)
+func (m *BinaryExpressionNode) XXX_DiscardUnknown() {
+	xxx_messageInfo_BinaryExpressionNode.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_BinaryExpression proto.InternalMessageInfo
+var xxx_messageInfo_BinaryExpressionNode proto.InternalMessageInfo
 
-func (m *BinaryExpression) GetOperator() node.BinaryStatement {
+func (m *BinaryExpressionNode) GetOperator() node.BinaryStatement {
 	if m != nil {
 		return m.Operator
 	}
 	return node.BinaryStatementUnknown
 }
 
-func (m *BinaryExpression) GetLeft() *Expression {
+func (m *BinaryExpressionNode) GetLeft() *Node {
 	if m != nil {
 		return m.Left
 	}
 	return nil
 }
 
-func (m *BinaryExpression) GetRight() *Expression {
+func (m *BinaryExpressionNode) GetRight() *Node {
 	if m != nil {
 		return m.Right
 	}
@@ -779,7 +793,7 @@ func (m *BinaryExpression) GetRight() *Expression {
 
 type CastExpression struct {
 	Type                 *types.Type `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
-	Expression           *Expression `protobuf:"bytes,2,opt,name=expression,proto3" json:"expression,omitempty"`
+	Expression           *Node       `protobuf:"bytes,2,opt,name=expression,proto3" json:"expression,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
 	XXX_unrecognized     []byte      `json:"-"`
 	XXX_sizecache        int32       `json:"-"`
@@ -789,7 +803,7 @@ func (m *CastExpression) Reset()         { *m = CastExpression{} }
 func (m *CastExpression) String() string { return proto.CompactTextString(m) }
 func (*CastExpression) ProtoMessage()    {}
 func (*CastExpression) Descriptor() ([]byte, []int) {
-	return fileDescriptor_91877109aacab46f, []int{11}
+	return fileDescriptor_91877109aacab46f, []int{9}
 }
 func (m *CastExpression) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CastExpression.Unmarshal(m, b)
@@ -816,14 +830,176 @@ func (m *CastExpression) GetType() *types.Type {
 	return nil
 }
 
-func (m *CastExpression) GetExpression() *Expression {
+func (m *CastExpression) GetExpression() *Node {
 	if m != nil {
 		return m.Expression
 	}
 	return nil
 }
 
-type Constant struct {
+type ComparisonExpressionNode struct {
+	Operator             node.OperatorStatement `protobuf:"varint,1,opt,name=operator,proto3,enum=cloudproud.lunodb.node.v1.OperatorStatement" json:"operator,omitempty"`
+	Left                 *Node                  `protobuf:"bytes,2,opt,name=left,proto3" json:"left,omitempty"`
+	Right                *Node                  `protobuf:"bytes,3,opt,name=right,proto3" json:"right,omitempty"`
+	SubOperator          node.OperatorStatement `protobuf:"varint,4,opt,name=sub_operator,json=subOperator,proto3,enum=cloudproud.lunodb.node.v1.OperatorStatement" json:"sub_operator,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}               `json:"-"`
+	XXX_unrecognized     []byte                 `json:"-"`
+	XXX_sizecache        int32                  `json:"-"`
+}
+
+func (m *ComparisonExpressionNode) Reset()         { *m = ComparisonExpressionNode{} }
+func (m *ComparisonExpressionNode) String() string { return proto.CompactTextString(m) }
+func (*ComparisonExpressionNode) ProtoMessage()    {}
+func (*ComparisonExpressionNode) Descriptor() ([]byte, []int) {
+	return fileDescriptor_91877109aacab46f, []int{10}
+}
+func (m *ComparisonExpressionNode) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ComparisonExpressionNode.Unmarshal(m, b)
+}
+func (m *ComparisonExpressionNode) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ComparisonExpressionNode.Marshal(b, m, deterministic)
+}
+func (m *ComparisonExpressionNode) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ComparisonExpressionNode.Merge(m, src)
+}
+func (m *ComparisonExpressionNode) XXX_Size() int {
+	return xxx_messageInfo_ComparisonExpressionNode.Size(m)
+}
+func (m *ComparisonExpressionNode) XXX_DiscardUnknown() {
+	xxx_messageInfo_ComparisonExpressionNode.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ComparisonExpressionNode proto.InternalMessageInfo
+
+func (m *ComparisonExpressionNode) GetOperator() node.OperatorStatement {
+	if m != nil {
+		return m.Operator
+	}
+	return node.OperatorUnknown
+}
+
+func (m *ComparisonExpressionNode) GetLeft() *Node {
+	if m != nil {
+		return m.Left
+	}
+	return nil
+}
+
+func (m *ComparisonExpressionNode) GetRight() *Node {
+	if m != nil {
+		return m.Right
+	}
+	return nil
+}
+
+func (m *ComparisonExpressionNode) GetSubOperator() node.OperatorStatement {
+	if m != nil {
+		return m.SubOperator
+	}
+	return node.OperatorUnknown
+}
+
+type CaseExpressionNode struct {
+	Expression           *Node                 `protobuf:"bytes,1,opt,name=expression,proto3" json:"expression,omitempty"`
+	When                 []*WhenExpressionNode `protobuf:"bytes,2,rep,name=when,proto3" json:"when,omitempty"`
+	Else                 *Node                 `protobuf:"bytes,3,opt,name=else,proto3" json:"else,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
+	XXX_unrecognized     []byte                `json:"-"`
+	XXX_sizecache        int32                 `json:"-"`
+}
+
+func (m *CaseExpressionNode) Reset()         { *m = CaseExpressionNode{} }
+func (m *CaseExpressionNode) String() string { return proto.CompactTextString(m) }
+func (*CaseExpressionNode) ProtoMessage()    {}
+func (*CaseExpressionNode) Descriptor() ([]byte, []int) {
+	return fileDescriptor_91877109aacab46f, []int{11}
+}
+func (m *CaseExpressionNode) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CaseExpressionNode.Unmarshal(m, b)
+}
+func (m *CaseExpressionNode) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CaseExpressionNode.Marshal(b, m, deterministic)
+}
+func (m *CaseExpressionNode) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CaseExpressionNode.Merge(m, src)
+}
+func (m *CaseExpressionNode) XXX_Size() int {
+	return xxx_messageInfo_CaseExpressionNode.Size(m)
+}
+func (m *CaseExpressionNode) XXX_DiscardUnknown() {
+	xxx_messageInfo_CaseExpressionNode.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CaseExpressionNode proto.InternalMessageInfo
+
+func (m *CaseExpressionNode) GetExpression() *Node {
+	if m != nil {
+		return m.Expression
+	}
+	return nil
+}
+
+func (m *CaseExpressionNode) GetWhen() []*WhenExpressionNode {
+	if m != nil {
+		return m.When
+	}
+	return nil
+}
+
+func (m *CaseExpressionNode) GetElse() *Node {
+	if m != nil {
+		return m.Else
+	}
+	return nil
+}
+
+type WhenExpressionNode struct {
+	Condition            *Node    `protobuf:"bytes,1,opt,name=condition,proto3" json:"condition,omitempty"`
+	Value                *Node    `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *WhenExpressionNode) Reset()         { *m = WhenExpressionNode{} }
+func (m *WhenExpressionNode) String() string { return proto.CompactTextString(m) }
+func (*WhenExpressionNode) ProtoMessage()    {}
+func (*WhenExpressionNode) Descriptor() ([]byte, []int) {
+	return fileDescriptor_91877109aacab46f, []int{12}
+}
+func (m *WhenExpressionNode) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_WhenExpressionNode.Unmarshal(m, b)
+}
+func (m *WhenExpressionNode) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_WhenExpressionNode.Marshal(b, m, deterministic)
+}
+func (m *WhenExpressionNode) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_WhenExpressionNode.Merge(m, src)
+}
+func (m *WhenExpressionNode) XXX_Size() int {
+	return xxx_messageInfo_WhenExpressionNode.Size(m)
+}
+func (m *WhenExpressionNode) XXX_DiscardUnknown() {
+	xxx_messageInfo_WhenExpressionNode.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_WhenExpressionNode proto.InternalMessageInfo
+
+func (m *WhenExpressionNode) GetCondition() *Node {
+	if m != nil {
+		return m.Condition
+	}
+	return nil
+}
+
+func (m *WhenExpressionNode) GetValue() *Node {
+	if m != nil {
+		return m.Value
+	}
+	return nil
+}
+
+type ConstantNode struct {
 	Type                 *types.Type `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
 	Value                []byte      `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
@@ -831,160 +1007,168 @@ type Constant struct {
 	XXX_sizecache        int32       `json:"-"`
 }
 
-func (m *Constant) Reset()         { *m = Constant{} }
-func (m *Constant) String() string { return proto.CompactTextString(m) }
-func (*Constant) ProtoMessage()    {}
-func (*Constant) Descriptor() ([]byte, []int) {
-	return fileDescriptor_91877109aacab46f, []int{12}
+func (m *ConstantNode) Reset()         { *m = ConstantNode{} }
+func (m *ConstantNode) String() string { return proto.CompactTextString(m) }
+func (*ConstantNode) ProtoMessage()    {}
+func (*ConstantNode) Descriptor() ([]byte, []int) {
+	return fileDescriptor_91877109aacab46f, []int{13}
 }
-func (m *Constant) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Constant.Unmarshal(m, b)
+func (m *ConstantNode) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ConstantNode.Unmarshal(m, b)
 }
-func (m *Constant) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Constant.Marshal(b, m, deterministic)
+func (m *ConstantNode) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ConstantNode.Marshal(b, m, deterministic)
 }
-func (m *Constant) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Constant.Merge(m, src)
+func (m *ConstantNode) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ConstantNode.Merge(m, src)
 }
-func (m *Constant) XXX_Size() int {
-	return xxx_messageInfo_Constant.Size(m)
+func (m *ConstantNode) XXX_Size() int {
+	return xxx_messageInfo_ConstantNode.Size(m)
 }
-func (m *Constant) XXX_DiscardUnknown() {
-	xxx_messageInfo_Constant.DiscardUnknown(m)
+func (m *ConstantNode) XXX_DiscardUnknown() {
+	xxx_messageInfo_ConstantNode.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_Constant proto.InternalMessageInfo
+var xxx_messageInfo_ConstantNode proto.InternalMessageInfo
 
-func (m *Constant) GetType() *types.Type {
+func (m *ConstantNode) GetType() *types.Type {
 	if m != nil {
 		return m.Type
 	}
 	return nil
 }
 
-func (m *Constant) GetValue() []byte {
+func (m *ConstantNode) GetValue() []byte {
 	if m != nil {
 		return m.Value
 	}
 	return nil
 }
 
-type OrderBy struct {
-	Expressions          []*OrderExpression `protobuf:"bytes,1,rep,name=expressions,proto3" json:"expressions,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
-	XXX_unrecognized     []byte             `json:"-"`
-	XXX_sizecache        int32              `json:"-"`
+type OrderByNode struct {
+	From                 *Node                  `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	Expressions          []*OrderExpressionNode `protobuf:"bytes,2,rep,name=expressions,proto3" json:"expressions,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}               `json:"-"`
+	XXX_unrecognized     []byte                 `json:"-"`
+	XXX_sizecache        int32                  `json:"-"`
 }
 
-func (m *OrderBy) Reset()         { *m = OrderBy{} }
-func (m *OrderBy) String() string { return proto.CompactTextString(m) }
-func (*OrderBy) ProtoMessage()    {}
-func (*OrderBy) Descriptor() ([]byte, []int) {
-	return fileDescriptor_91877109aacab46f, []int{13}
+func (m *OrderByNode) Reset()         { *m = OrderByNode{} }
+func (m *OrderByNode) String() string { return proto.CompactTextString(m) }
+func (*OrderByNode) ProtoMessage()    {}
+func (*OrderByNode) Descriptor() ([]byte, []int) {
+	return fileDescriptor_91877109aacab46f, []int{14}
 }
-func (m *OrderBy) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_OrderBy.Unmarshal(m, b)
+func (m *OrderByNode) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_OrderByNode.Unmarshal(m, b)
 }
-func (m *OrderBy) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_OrderBy.Marshal(b, m, deterministic)
+func (m *OrderByNode) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_OrderByNode.Marshal(b, m, deterministic)
 }
-func (m *OrderBy) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_OrderBy.Merge(m, src)
+func (m *OrderByNode) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_OrderByNode.Merge(m, src)
 }
-func (m *OrderBy) XXX_Size() int {
-	return xxx_messageInfo_OrderBy.Size(m)
+func (m *OrderByNode) XXX_Size() int {
+	return xxx_messageInfo_OrderByNode.Size(m)
 }
-func (m *OrderBy) XXX_DiscardUnknown() {
-	xxx_messageInfo_OrderBy.DiscardUnknown(m)
+func (m *OrderByNode) XXX_DiscardUnknown() {
+	xxx_messageInfo_OrderByNode.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_OrderBy proto.InternalMessageInfo
+var xxx_messageInfo_OrderByNode proto.InternalMessageInfo
 
-func (m *OrderBy) GetExpressions() []*OrderExpression {
+func (m *OrderByNode) GetFrom() *Node {
+	if m != nil {
+		return m.From
+	}
+	return nil
+}
+
+func (m *OrderByNode) GetExpressions() []*OrderExpressionNode {
 	if m != nil {
 		return m.Expressions
 	}
 	return nil
 }
 
-type OrderExpression struct {
-	Direction            uint32      `protobuf:"varint,1,opt,name=direction,proto3" json:"direction,omitempty"`
-	Expression           *Expression `protobuf:"bytes,2,opt,name=expression,proto3" json:"expression,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
-	XXX_unrecognized     []byte      `json:"-"`
-	XXX_sizecache        int32       `json:"-"`
+type OrderExpressionNode struct {
+	Direction            uint32   `protobuf:"varint,1,opt,name=direction,proto3" json:"direction,omitempty"`
+	Expression           *Node    `protobuf:"bytes,2,opt,name=expression,proto3" json:"expression,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *OrderExpression) Reset()         { *m = OrderExpression{} }
-func (m *OrderExpression) String() string { return proto.CompactTextString(m) }
-func (*OrderExpression) ProtoMessage()    {}
-func (*OrderExpression) Descriptor() ([]byte, []int) {
-	return fileDescriptor_91877109aacab46f, []int{14}
+func (m *OrderExpressionNode) Reset()         { *m = OrderExpressionNode{} }
+func (m *OrderExpressionNode) String() string { return proto.CompactTextString(m) }
+func (*OrderExpressionNode) ProtoMessage()    {}
+func (*OrderExpressionNode) Descriptor() ([]byte, []int) {
+	return fileDescriptor_91877109aacab46f, []int{15}
 }
-func (m *OrderExpression) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_OrderExpression.Unmarshal(m, b)
+func (m *OrderExpressionNode) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_OrderExpressionNode.Unmarshal(m, b)
 }
-func (m *OrderExpression) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_OrderExpression.Marshal(b, m, deterministic)
+func (m *OrderExpressionNode) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_OrderExpressionNode.Marshal(b, m, deterministic)
 }
-func (m *OrderExpression) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_OrderExpression.Merge(m, src)
+func (m *OrderExpressionNode) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_OrderExpressionNode.Merge(m, src)
 }
-func (m *OrderExpression) XXX_Size() int {
-	return xxx_messageInfo_OrderExpression.Size(m)
+func (m *OrderExpressionNode) XXX_Size() int {
+	return xxx_messageInfo_OrderExpressionNode.Size(m)
 }
-func (m *OrderExpression) XXX_DiscardUnknown() {
-	xxx_messageInfo_OrderExpression.DiscardUnknown(m)
+func (m *OrderExpressionNode) XXX_DiscardUnknown() {
+	xxx_messageInfo_OrderExpressionNode.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_OrderExpression proto.InternalMessageInfo
+var xxx_messageInfo_OrderExpressionNode proto.InternalMessageInfo
 
-func (m *OrderExpression) GetDirection() uint32 {
+func (m *OrderExpressionNode) GetDirection() uint32 {
 	if m != nil {
 		return m.Direction
 	}
 	return 0
 }
 
-func (m *OrderExpression) GetExpression() *Expression {
+func (m *OrderExpressionNode) GetExpression() *Node {
 	if m != nil {
 		return m.Expression
 	}
 	return nil
 }
 
-type Tuple struct {
-	Expressions          []*Expression `protobuf:"bytes,1,rep,name=expressions,proto3" json:"expressions,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
-	XXX_unrecognized     []byte        `json:"-"`
-	XXX_sizecache        int32         `json:"-"`
+type TupleNode struct {
+	Expressions          []*Node  `protobuf:"bytes,1,rep,name=expressions,proto3" json:"expressions,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *Tuple) Reset()         { *m = Tuple{} }
-func (m *Tuple) String() string { return proto.CompactTextString(m) }
-func (*Tuple) ProtoMessage()    {}
-func (*Tuple) Descriptor() ([]byte, []int) {
-	return fileDescriptor_91877109aacab46f, []int{15}
+func (m *TupleNode) Reset()         { *m = TupleNode{} }
+func (m *TupleNode) String() string { return proto.CompactTextString(m) }
+func (*TupleNode) ProtoMessage()    {}
+func (*TupleNode) Descriptor() ([]byte, []int) {
+	return fileDescriptor_91877109aacab46f, []int{16}
 }
-func (m *Tuple) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Tuple.Unmarshal(m, b)
+func (m *TupleNode) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_TupleNode.Unmarshal(m, b)
 }
-func (m *Tuple) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Tuple.Marshal(b, m, deterministic)
+func (m *TupleNode) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_TupleNode.Marshal(b, m, deterministic)
 }
-func (m *Tuple) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Tuple.Merge(m, src)
+func (m *TupleNode) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_TupleNode.Merge(m, src)
 }
-func (m *Tuple) XXX_Size() int {
-	return xxx_messageInfo_Tuple.Size(m)
+func (m *TupleNode) XXX_Size() int {
+	return xxx_messageInfo_TupleNode.Size(m)
 }
-func (m *Tuple) XXX_DiscardUnknown() {
-	xxx_messageInfo_Tuple.DiscardUnknown(m)
+func (m *TupleNode) XXX_DiscardUnknown() {
+	xxx_messageInfo_TupleNode.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_Tuple proto.InternalMessageInfo
+var xxx_messageInfo_TupleNode proto.InternalMessageInfo
 
-func (m *Tuple) GetExpressions() []*Expression {
+func (m *TupleNode) GetExpressions() []*Node {
 	if m != nil {
 		return m.Expressions
 	}
@@ -992,17 +1176,18 @@ func (m *Tuple) GetExpressions() []*Expression {
 }
 
 type VariableExpression struct {
-	Offset               uint64   `protobuf:"varint,1,opt,name=offset,proto3" json:"offset,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	Offset               uint64      `protobuf:"varint,1,opt,name=offset,proto3" json:"offset,omitempty"`
+	Type                 *types.Type `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
+	XXX_unrecognized     []byte      `json:"-"`
+	XXX_sizecache        int32       `json:"-"`
 }
 
 func (m *VariableExpression) Reset()         { *m = VariableExpression{} }
 func (m *VariableExpression) String() string { return proto.CompactTextString(m) }
 func (*VariableExpression) ProtoMessage()    {}
 func (*VariableExpression) Descriptor() ([]byte, []int) {
-	return fileDescriptor_91877109aacab46f, []int{16}
+	return fileDescriptor_91877109aacab46f, []int{17}
 }
 func (m *VariableExpression) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_VariableExpression.Unmarshal(m, b)
@@ -1029,137 +1214,413 @@ func (m *VariableExpression) GetOffset() uint64 {
 	return 0
 }
 
-type Parameter struct {
+func (m *VariableExpression) GetType() *types.Type {
+	if m != nil {
+		return m.Type
+	}
+	return nil
+}
+
+type ValuesClauseNode struct {
+	Rows                 []*Expressions `protobuf:"bytes,1,rep,name=rows,proto3" json:"rows,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
+	XXX_unrecognized     []byte         `json:"-"`
+	XXX_sizecache        int32          `json:"-"`
+}
+
+func (m *ValuesClauseNode) Reset()         { *m = ValuesClauseNode{} }
+func (m *ValuesClauseNode) String() string { return proto.CompactTextString(m) }
+func (*ValuesClauseNode) ProtoMessage()    {}
+func (*ValuesClauseNode) Descriptor() ([]byte, []int) {
+	return fileDescriptor_91877109aacab46f, []int{18}
+}
+func (m *ValuesClauseNode) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ValuesClauseNode.Unmarshal(m, b)
+}
+func (m *ValuesClauseNode) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ValuesClauseNode.Marshal(b, m, deterministic)
+}
+func (m *ValuesClauseNode) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ValuesClauseNode.Merge(m, src)
+}
+func (m *ValuesClauseNode) XXX_Size() int {
+	return xxx_messageInfo_ValuesClauseNode.Size(m)
+}
+func (m *ValuesClauseNode) XXX_DiscardUnknown() {
+	xxx_messageInfo_ValuesClauseNode.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ValuesClauseNode proto.InternalMessageInfo
+
+func (m *ValuesClauseNode) GetRows() []*Expressions {
+	if m != nil {
+		return m.Rows
+	}
+	return nil
+}
+
+type Expressions struct {
+	Expressions          []*Node  `protobuf:"bytes,1,rep,name=expressions,proto3" json:"expressions,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *Expressions) Reset()         { *m = Expressions{} }
+func (m *Expressions) String() string { return proto.CompactTextString(m) }
+func (*Expressions) ProtoMessage()    {}
+func (*Expressions) Descriptor() ([]byte, []int) {
+	return fileDescriptor_91877109aacab46f, []int{19}
+}
+func (m *Expressions) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Expressions.Unmarshal(m, b)
+}
+func (m *Expressions) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Expressions.Marshal(b, m, deterministic)
+}
+func (m *Expressions) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Expressions.Merge(m, src)
+}
+func (m *Expressions) XXX_Size() int {
+	return xxx_messageInfo_Expressions.Size(m)
+}
+func (m *Expressions) XXX_DiscardUnknown() {
+	xxx_messageInfo_Expressions.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Expressions proto.InternalMessageInfo
+
+func (m *Expressions) GetExpressions() []*Node {
+	if m != nil {
+		return m.Expressions
+	}
+	return nil
+}
+
+type ParameterNode struct {
 	Index                uint32   `protobuf:"varint,1,opt,name=index,proto3" json:"index,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *Parameter) Reset()         { *m = Parameter{} }
-func (m *Parameter) String() string { return proto.CompactTextString(m) }
-func (*Parameter) ProtoMessage()    {}
-func (*Parameter) Descriptor() ([]byte, []int) {
-	return fileDescriptor_91877109aacab46f, []int{17}
+func (m *ParameterNode) Reset()         { *m = ParameterNode{} }
+func (m *ParameterNode) String() string { return proto.CompactTextString(m) }
+func (*ParameterNode) ProtoMessage()    {}
+func (*ParameterNode) Descriptor() ([]byte, []int) {
+	return fileDescriptor_91877109aacab46f, []int{20}
 }
-func (m *Parameter) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Parameter.Unmarshal(m, b)
+func (m *ParameterNode) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ParameterNode.Unmarshal(m, b)
 }
-func (m *Parameter) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Parameter.Marshal(b, m, deterministic)
+func (m *ParameterNode) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ParameterNode.Marshal(b, m, deterministic)
 }
-func (m *Parameter) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Parameter.Merge(m, src)
+func (m *ParameterNode) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ParameterNode.Merge(m, src)
 }
-func (m *Parameter) XXX_Size() int {
-	return xxx_messageInfo_Parameter.Size(m)
+func (m *ParameterNode) XXX_Size() int {
+	return xxx_messageInfo_ParameterNode.Size(m)
 }
-func (m *Parameter) XXX_DiscardUnknown() {
-	xxx_messageInfo_Parameter.DiscardUnknown(m)
+func (m *ParameterNode) XXX_DiscardUnknown() {
+	xxx_messageInfo_ParameterNode.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_Parameter proto.InternalMessageInfo
+var xxx_messageInfo_ParameterNode proto.InternalMessageInfo
 
-func (m *Parameter) GetIndex() uint32 {
+func (m *ParameterNode) GetIndex() uint32 {
 	if m != nil {
 		return m.Index
 	}
 	return 0
 }
 
+type DistinctNode struct {
+	From                 *Node    `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	Expressions          []*Node  `protobuf:"bytes,2,rep,name=expressions,proto3" json:"expressions,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *DistinctNode) Reset()         { *m = DistinctNode{} }
+func (m *DistinctNode) String() string { return proto.CompactTextString(m) }
+func (*DistinctNode) ProtoMessage()    {}
+func (*DistinctNode) Descriptor() ([]byte, []int) {
+	return fileDescriptor_91877109aacab46f, []int{21}
+}
+func (m *DistinctNode) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DistinctNode.Unmarshal(m, b)
+}
+func (m *DistinctNode) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DistinctNode.Marshal(b, m, deterministic)
+}
+func (m *DistinctNode) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DistinctNode.Merge(m, src)
+}
+func (m *DistinctNode) XXX_Size() int {
+	return xxx_messageInfo_DistinctNode.Size(m)
+}
+func (m *DistinctNode) XXX_DiscardUnknown() {
+	xxx_messageInfo_DistinctNode.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DistinctNode proto.InternalMessageInfo
+
+func (m *DistinctNode) GetFrom() *Node {
+	if m != nil {
+		return m.From
+	}
+	return nil
+}
+
+func (m *DistinctNode) GetExpressions() []*Node {
+	if m != nil {
+		return m.Expressions
+	}
+	return nil
+}
+
+type RecordNode struct {
+	Columns              []*Node  `protobuf:"bytes,1,rep,name=columns,proto3" json:"columns,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *RecordNode) Reset()         { *m = RecordNode{} }
+func (m *RecordNode) String() string { return proto.CompactTextString(m) }
+func (*RecordNode) ProtoMessage()    {}
+func (*RecordNode) Descriptor() ([]byte, []int) {
+	return fileDescriptor_91877109aacab46f, []int{22}
+}
+func (m *RecordNode) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_RecordNode.Unmarshal(m, b)
+}
+func (m *RecordNode) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_RecordNode.Marshal(b, m, deterministic)
+}
+func (m *RecordNode) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RecordNode.Merge(m, src)
+}
+func (m *RecordNode) XXX_Size() int {
+	return xxx_messageInfo_RecordNode.Size(m)
+}
+func (m *RecordNode) XXX_DiscardUnknown() {
+	xxx_messageInfo_RecordNode.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RecordNode proto.InternalMessageInfo
+
+func (m *RecordNode) GetColumns() []*Node {
+	if m != nil {
+		return m.Columns
+	}
+	return nil
+}
+
+type ReferenceNode struct {
+	Parts                []string `protobuf:"bytes,1,rep,name=parts,proto3" json:"parts,omitempty"`
+	Node                 *Node    `protobuf:"bytes,2,opt,name=node,proto3" json:"node,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *ReferenceNode) Reset()         { *m = ReferenceNode{} }
+func (m *ReferenceNode) String() string { return proto.CompactTextString(m) }
+func (*ReferenceNode) ProtoMessage()    {}
+func (*ReferenceNode) Descriptor() ([]byte, []int) {
+	return fileDescriptor_91877109aacab46f, []int{23}
+}
+func (m *ReferenceNode) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ReferenceNode.Unmarshal(m, b)
+}
+func (m *ReferenceNode) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ReferenceNode.Marshal(b, m, deterministic)
+}
+func (m *ReferenceNode) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReferenceNode.Merge(m, src)
+}
+func (m *ReferenceNode) XXX_Size() int {
+	return xxx_messageInfo_ReferenceNode.Size(m)
+}
+func (m *ReferenceNode) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReferenceNode.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ReferenceNode proto.InternalMessageInfo
+
+func (m *ReferenceNode) GetParts() []string {
+	if m != nil {
+		return m.Parts
+	}
+	return nil
+}
+
+func (m *ReferenceNode) GetNode() *Node {
+	if m != nil {
+		return m.Node
+	}
+	return nil
+}
+
+type ValueNode struct {
+	Type                 *types.Type `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
+	XXX_unrecognized     []byte      `json:"-"`
+	XXX_sizecache        int32       `json:"-"`
+}
+
+func (m *ValueNode) Reset()         { *m = ValueNode{} }
+func (m *ValueNode) String() string { return proto.CompactTextString(m) }
+func (*ValueNode) ProtoMessage()    {}
+func (*ValueNode) Descriptor() ([]byte, []int) {
+	return fileDescriptor_91877109aacab46f, []int{24}
+}
+func (m *ValueNode) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ValueNode.Unmarshal(m, b)
+}
+func (m *ValueNode) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ValueNode.Marshal(b, m, deterministic)
+}
+func (m *ValueNode) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ValueNode.Merge(m, src)
+}
+func (m *ValueNode) XXX_Size() int {
+	return xxx_messageInfo_ValueNode.Size(m)
+}
+func (m *ValueNode) XXX_DiscardUnknown() {
+	xxx_messageInfo_ValueNode.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ValueNode proto.InternalMessageInfo
+
+func (m *ValueNode) GetType() *types.Type {
+	if m != nil {
+		return m.Type
+	}
+	return nil
+}
+
 func init() {
-	proto.RegisterType((*Literal)(nil), "cloudproud.lunodb.connector.plan.v1.Literal")
-	proto.RegisterType((*From)(nil), "cloudproud.lunodb.connector.plan.v1.From")
-	proto.RegisterType((*Expression)(nil), "cloudproud.lunodb.connector.plan.v1.Expression")
-	proto.RegisterType((*Column)(nil), "cloudproud.lunodb.connector.plan.v1.Column")
-	proto.RegisterType((*FilterExpression)(nil), "cloudproud.lunodb.connector.plan.v1.FilterExpression")
-	proto.RegisterType((*Function)(nil), "cloudproud.lunodb.connector.plan.v1.Function")
-	proto.RegisterType((*Aggregation)(nil), "cloudproud.lunodb.connector.plan.v1.Aggregation")
-	proto.RegisterType((*AndExpression)(nil), "cloudproud.lunodb.connector.plan.v1.AndExpression")
-	proto.RegisterType((*OrExpression)(nil), "cloudproud.lunodb.connector.plan.v1.OrExpression")
-	proto.RegisterType((*ComparisonExpression)(nil), "cloudproud.lunodb.connector.plan.v1.ComparisonExpression")
-	proto.RegisterType((*BinaryExpression)(nil), "cloudproud.lunodb.connector.plan.v1.BinaryExpression")
+	proto.RegisterType((*Node)(nil), "cloudproud.lunodb.connector.plan.v1.Node")
+	proto.RegisterType((*ColumnNode)(nil), "cloudproud.lunodb.connector.plan.v1.ColumnNode")
+	proto.RegisterType((*ScannerNode)(nil), "cloudproud.lunodb.connector.plan.v1.ScannerNode")
+	proto.RegisterType((*FilterNode)(nil), "cloudproud.lunodb.connector.plan.v1.FilterNode")
+	proto.RegisterType((*FunctionNode)(nil), "cloudproud.lunodb.connector.plan.v1.FunctionNode")
+	proto.RegisterType((*AggregationNode)(nil), "cloudproud.lunodb.connector.plan.v1.AggregationNode")
+	proto.RegisterType((*AndExpressionNode)(nil), "cloudproud.lunodb.connector.plan.v1.AndExpressionNode")
+	proto.RegisterType((*OrExpressionNode)(nil), "cloudproud.lunodb.connector.plan.v1.OrExpressionNode")
+	proto.RegisterType((*BinaryExpressionNode)(nil), "cloudproud.lunodb.connector.plan.v1.BinaryExpressionNode")
 	proto.RegisterType((*CastExpression)(nil), "cloudproud.lunodb.connector.plan.v1.CastExpression")
-	proto.RegisterType((*Constant)(nil), "cloudproud.lunodb.connector.plan.v1.Constant")
-	proto.RegisterType((*OrderBy)(nil), "cloudproud.lunodb.connector.plan.v1.OrderBy")
-	proto.RegisterType((*OrderExpression)(nil), "cloudproud.lunodb.connector.plan.v1.OrderExpression")
-	proto.RegisterType((*Tuple)(nil), "cloudproud.lunodb.connector.plan.v1.Tuple")
+	proto.RegisterType((*ComparisonExpressionNode)(nil), "cloudproud.lunodb.connector.plan.v1.ComparisonExpressionNode")
+	proto.RegisterType((*CaseExpressionNode)(nil), "cloudproud.lunodb.connector.plan.v1.CaseExpressionNode")
+	proto.RegisterType((*WhenExpressionNode)(nil), "cloudproud.lunodb.connector.plan.v1.WhenExpressionNode")
+	proto.RegisterType((*ConstantNode)(nil), "cloudproud.lunodb.connector.plan.v1.ConstantNode")
+	proto.RegisterType((*OrderByNode)(nil), "cloudproud.lunodb.connector.plan.v1.OrderByNode")
+	proto.RegisterType((*OrderExpressionNode)(nil), "cloudproud.lunodb.connector.plan.v1.OrderExpressionNode")
+	proto.RegisterType((*TupleNode)(nil), "cloudproud.lunodb.connector.plan.v1.TupleNode")
 	proto.RegisterType((*VariableExpression)(nil), "cloudproud.lunodb.connector.plan.v1.VariableExpression")
-	proto.RegisterType((*Parameter)(nil), "cloudproud.lunodb.connector.plan.v1.Parameter")
+	proto.RegisterType((*ValuesClauseNode)(nil), "cloudproud.lunodb.connector.plan.v1.ValuesClauseNode")
+	proto.RegisterType((*Expressions)(nil), "cloudproud.lunodb.connector.plan.v1.Expressions")
+	proto.RegisterType((*ParameterNode)(nil), "cloudproud.lunodb.connector.plan.v1.ParameterNode")
+	proto.RegisterType((*DistinctNode)(nil), "cloudproud.lunodb.connector.plan.v1.DistinctNode")
+	proto.RegisterType((*RecordNode)(nil), "cloudproud.lunodb.connector.plan.v1.RecordNode")
+	proto.RegisterType((*ReferenceNode)(nil), "cloudproud.lunodb.connector.plan.v1.ReferenceNode")
+	proto.RegisterType((*ValueNode)(nil), "cloudproud.lunodb.connector.plan.v1.ValueNode")
 }
 
 func init() { proto.RegisterFile("proto/plan/plan.proto", fileDescriptor_91877109aacab46f) }
 
 var fileDescriptor_91877109aacab46f = []byte{
-	// 1108 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x57, 0x4f, 0x6f, 0x1b, 0x45,
-	0x14, 0xf7, 0xae, 0xff, 0x3f, 0x27, 0x69, 0x19, 0xa5, 0x60, 0x55, 0x1c, 0xc2, 0xf6, 0xd0, 0xd2,
-	0x3f, 0x36, 0x49, 0x83, 0x10, 0x96, 0x38, 0x60, 0x2b, 0x8d, 0x4b, 0x53, 0xe2, 0x2e, 0x60, 0xa1,
-	0x12, 0x11, 0x8d, 0x77, 0xc7, 0xce, 0x4a, 0xeb, 0x99, 0xd5, 0xec, 0x6c, 0x54, 0xdf, 0xf8, 0x02,
-	0x5c, 0xb8, 0x70, 0xe0, 0xc6, 0x01, 0x24, 0xf8, 0x24, 0xf0, 0x31, 0x38, 0x70, 0xe0, 0xce, 0x19,
-	0x34, 0x33, 0xeb, 0xfd, 0x93, 0x18, 0xb4, 0x71, 0x8b, 0xc4, 0x65, 0xb5, 0x33, 0x7e, 0xbf, 0xdf,
-	0xbe, 0xf7, 0x9b, 0xf7, 0xde, 0x3c, 0xc3, 0x8d, 0x80, 0x33, 0xc1, 0xba, 0x81, 0x8f, 0xa9, 0x7a,
-	0x74, 0xd4, 0x1a, 0xdd, 0x72, 0x7c, 0x16, 0xb9, 0x01, 0x67, 0x91, 0xdb, 0xf1, 0x23, 0xca, 0xdc,
-	0x49, 0xc7, 0x61, 0x94, 0x12, 0x47, 0x30, 0xde, 0x51, 0x76, 0xe7, 0xbb, 0x37, 0xb7, 0x67, 0x6c,
-	0xc6, 0x34, 0x5e, 0xbe, 0x69, 0xe8, 0xcd, 0x98, 0x91, 0x32, 0x97, 0xa8, 0x47, 0xbc, 0xfd, 0x86,
-	0xde, 0x16, 0x8b, 0x80, 0x84, 0xfa, 0xa9, 0x7f, 0xb0, 0xfe, 0x32, 0xa1, 0x7e, 0xe4, 0x09, 0xc2,
-	0xb1, 0x8f, 0x1e, 0x43, 0xdd, 0x61, 0x7e, 0x34, 0xa7, 0x61, 0xdb, 0xd8, 0x29, 0xdf, 0x69, 0xed,
-	0x75, 0x3b, 0x05, 0x1c, 0xe9, 0x1c, 0xbc, 0x08, 0x38, 0x09, 0x43, 0x8f, 0x51, 0x7b, 0x89, 0x47,
-	0x1f, 0x40, 0x65, 0xca, 0xd9, 0xbc, 0x6d, 0xee, 0x18, 0x77, 0x5a, 0x7b, 0x6f, 0x17, 0xe2, 0x79,
-	0xc4, 0xd9, 0xdc, 0x56, 0x30, 0xf4, 0x14, 0x6a, 0x53, 0xcf, 0x17, 0x84, 0xb7, 0xcb, 0x8a, 0xe0,
-	0xdd, 0x62, 0x04, 0x0a, 0x92, 0x71, 0x27, 0x26, 0x41, 0x36, 0xb4, 0xf0, 0x6c, 0xc6, 0xc9, 0x0c,
-	0x0b, 0x8f, 0xd1, 0x76, 0x45, 0x71, 0xbe, 0x53, 0x88, 0xf3, 0xc3, 0x14, 0x67, 0x67, 0x49, 0xd0,
-	0x21, 0x34, 0x18, 0x77, 0x09, 0x3f, 0x9d, 0x2c, 0xda, 0x55, 0x45, 0x78, 0xbf, 0x10, 0xe1, 0xb1,
-	0x04, 0xf5, 0x17, 0x76, 0x9d, 0xe9, 0x17, 0x6b, 0x1f, 0x2a, 0x32, 0x72, 0xb4, 0x0d, 0x55, 0x81,
-	0x27, 0x3e, 0x69, 0x1b, 0x3b, 0xc6, 0x9d, 0xa6, 0xad, 0x17, 0xe8, 0x75, 0xa8, 0x85, 0xce, 0x19,
-	0x99, 0x63, 0x25, 0x65, 0xd3, 0x8e, 0x57, 0xd6, 0xcf, 0x55, 0x80, 0x34, 0x52, 0x74, 0x00, 0x35,
-	0x2d, 0xbd, 0x42, 0xb7, 0xf6, 0xee, 0x15, 0xf2, 0x65, 0xa0, 0x20, 0xc3, 0x92, 0x1d, 0x83, 0xd1,
-	0x13, 0x68, 0x4c, 0x23, 0xea, 0x28, 0x95, 0xf4, 0xd1, 0x3d, 0x28, 0xa6, 0x7c, 0x0c, 0x1a, 0x96,
-	0xec, 0x84, 0x00, 0xb9, 0xf0, 0xda, 0xc4, 0xa3, 0x98, 0x2f, 0x4e, 0x49, 0xe2, 0xe8, 0x95, 0xce,
-	0xb3, 0xaf, 0xd0, 0x69, 0x94, 0xc3, 0x92, 0x7d, 0x7d, 0x72, 0x61, 0x4f, 0xba, 0xec, 0x30, 0x1a,
-	0x0a, 0x4c, 0x45, 0x7c, 0xb0, 0x0f, 0x0a, 0xc6, 0xae, 0x41, 0xd2, 0xe5, 0x25, 0x01, 0xea, 0x43,
-	0x55, 0x44, 0x81, 0x4f, 0xe2, 0x13, 0xbd, 0x5b, 0x88, 0xe9, 0x53, 0x89, 0x18, 0x96, 0x6c, 0x0d,
-	0x45, 0x9f, 0x41, 0xe3, 0x1c, 0x73, 0x4f, 0x1d, 0x65, 0x4d, 0xd1, 0xbc, 0x57, 0x88, 0x66, 0x1c,
-	0x83, 0x72, 0xf1, 0x26, 0x54, 0xe8, 0x63, 0x68, 0x06, 0x98, 0xe3, 0x39, 0x91, 0x55, 0x51, 0x57,
-	0xbc, 0x9d, 0x42, 0xbc, 0xa3, 0x25, 0x6a, 0x58, 0xb2, 0x53, 0x0a, 0xf4, 0x25, 0x5c, 0x73, 0x70,
-	0x28, 0xb2, 0x67, 0xd3, 0x50, 0xac, 0x0f, 0x8b, 0xc9, 0x87, 0x43, 0x91, 0xf3, 0x74, 0xcb, 0xc9,
-	0xed, 0xf4, 0x5b, 0xd0, 0x0c, 0x05, 0x16, 0x64, 0x4e, 0xa8, 0xb0, 0x5c, 0xa8, 0xe9, 0x5c, 0x43,
-	0x08, 0x2a, 0x14, 0xcf, 0x97, 0x49, 0xae, 0xde, 0xd3, 0xcc, 0x37, 0x57, 0x67, 0x7e, 0x39, 0x9b,
-	0xf9, 0xa8, 0x0d, 0x75, 0x07, 0x0b, 0xec, 0xb3, 0x99, 0x3a, 0xef, 0xa6, 0xbd, 0x5c, 0x5a, 0xdf,
-	0x95, 0xe1, 0xfa, 0xc5, 0x1e, 0x80, 0x9e, 0x01, 0x64, 0x42, 0xd4, 0xd5, 0x71, 0xd5, 0xbe, 0x36,
-	0x2c, 0xd9, 0x19, 0x12, 0xf4, 0x05, 0x6c, 0x61, 0xea, 0x66, 0x95, 0xd3, 0xb5, 0xb2, 0x57, 0xac,
-	0xa3, 0x50, 0x37, 0xc7, 0xbc, 0x89, 0xb3, 0x1b, 0xe8, 0x73, 0xd8, 0x64, 0xfc, 0x72, 0xc5, 0xec,
-	0x16, 0x6c, 0x2e, 0x39, 0xea, 0x0d, 0x96, 0x55, 0x22, 0x80, 0x1b, 0x0e, 0x9b, 0x07, 0x98, 0x7b,
-	0x21, 0xa3, 0xd9, 0x2f, 0xe8, 0xb2, 0x79, 0xbf, 0x60, 0xd9, 0x2c, 0x19, 0x72, 0x5f, 0xda, 0x76,
-	0x56, 0xec, 0xcb, 0x1c, 0x70, 0x18, 0x75, 0x3d, 0xd9, 0x0e, 0xac, 0xaf, 0x0d, 0x68, 0x2c, 0xfb,
-	0x04, 0x7a, 0x06, 0xad, 0xd4, 0x81, 0xb5, 0xaf, 0x9b, 0x2c, 0x47, 0x92, 0x59, 0x66, 0x26, 0xb3,
-	0x6e, 0x42, 0xc3, 0xf5, 0x42, 0xe1, 0x51, 0x47, 0x28, 0x1d, 0x1b, 0x76, 0xb2, 0xb6, 0xfe, 0x34,
-	0xa0, 0x95, 0xe9, 0xee, 0xe8, 0x23, 0x68, 0xcc, 0x38, 0x8b, 0x02, 0xd9, 0xd0, 0xd7, 0xbd, 0xfe,
-	0x14, 0x41, 0x7f, 0x81, 0x0e, 0xa1, 0x76, 0x86, 0xcf, 0x3d, 0x3a, 0x8b, 0x33, 0xe3, 0xca, 0x4c,
-	0x31, 0xfc, 0xa2, 0x4e, 0xe5, 0x97, 0xd7, 0xc9, 0xfa, 0xd1, 0x80, 0xcd, 0x5c, 0x0e, 0xa2, 0xc7,
-	0x50, 0xf1, 0xc9, 0x54, 0xc4, 0xc5, 0xb1, 0xe6, 0x5d, 0xab, 0x28, 0xd0, 0x13, 0xa8, 0x72, 0x6f,
-	0x76, 0x26, 0xe2, 0xb8, 0xd7, 0xe4, 0xd2, 0x1c, 0xd6, 0x0f, 0x06, 0x6c, 0x64, 0x33, 0xfa, 0x7f,
-	0xeb, 0xe8, 0x2f, 0x26, 0x6c, 0xaf, 0x2a, 0x0c, 0x34, 0x84, 0x06, 0x0b, 0x08, 0xc7, 0x82, 0x71,
-	0xe5, 0xf4, 0xd6, 0xca, 0x21, 0x41, 0xcd, 0x69, 0xb2, 0x7a, 0x63, 0xd3, 0x4f, 0x96, 0x7d, 0xd3,
-	0x4e, 0xd0, 0x49, 0xe8, 0xe6, 0x2b, 0x0c, 0xbd, 0xfc, 0xf2, 0xa1, 0xa3, 0x63, 0xd8, 0x08, 0xa3,
-	0xc9, 0x69, 0x12, 0x65, 0x65, 0x8d, 0x28, 0x5b, 0x61, 0x34, 0x59, 0xee, 0x5a, 0xbf, 0x1b, 0x70,
-	0xfd, 0xe2, 0xc5, 0x8f, 0x1e, 0x5d, 0xd2, 0xf1, 0xee, 0xbf, 0x7c, 0x41, 0xc3, 0x57, 0xa9, 0x38,
-	0xc8, 0xa9, 0x78, 0xe5, 0x3a, 0xd2, 0xfa, 0x1d, 0xe4, 0xf5, 0xbb, 0x32, 0x4b, 0x9c, 0x34, 0xdf,
-	0x1a, 0xb0, 0x95, 0xbf, 0x45, 0xd1, 0x3e, 0x54, 0xe4, 0x6c, 0x1e, 0xe7, 0xf7, 0xce, 0x0a, 0x62,
-	0x3d, 0xba, 0xcb, 0xa1, 0x63, 0x11, 0x10, 0x5b, 0x59, 0xa3, 0xe3, 0xdc, 0x0d, 0xb7, 0x66, 0x68,
-	0x19, 0x0a, 0x6b, 0x0c, 0x8d, 0xe5, 0x74, 0xb4, 0xa6, 0x4b, 0xdb, 0x50, 0x3d, 0xc7, 0x7e, 0xa4,
-	0x9b, 0xf1, 0x86, 0xad, 0x17, 0x16, 0x86, 0x7a, 0x3c, 0xfd, 0xa2, 0xf1, 0xaa, 0xfe, 0xbf, 0x5f,
-	0x7c, 0x80, 0xfe, 0xa7, 0xe6, 0xf6, 0x95, 0x01, 0xd7, 0x2e, 0x18, 0xa0, 0x37, 0xa1, 0xe9, 0x7a,
-	0x9c, 0xe8, 0xa9, 0x56, 0xc6, 0xb1, 0x69, 0xa7, 0x1b, 0xaf, 0x5e, 0xbd, 0xe7, 0x50, 0x55, 0x13,
-	0xe1, 0x7f, 0x70, 0xc7, 0x59, 0xf7, 0x01, 0x5d, 0x1e, 0x13, 0xe5, 0xa4, 0xc4, 0xa6, 0xd3, 0x90,
-	0xe8, 0xc6, 0x58, 0xb1, 0xe3, 0x95, 0xf5, 0x16, 0x34, 0x93, 0xe1, 0x4f, 0x1e, 0x89, 0x47, 0x5d,
-	0xf2, 0x22, 0x56, 0x40, 0x2f, 0xfa, 0xdf, 0x98, 0x70, 0xdb, 0x61, 0xf3, 0x22, 0x4e, 0xf5, 0x9b,
-	0x23, 0x1f, 0xd3, 0x91, 0xfc, 0xd7, 0x38, 0x32, 0x9e, 0xdf, 0x9b, 0x79, 0xe2, 0x2c, 0x92, 0x66,
-	0xf3, 0x6e, 0x0a, 0xee, 0xc6, 0x60, 0x1c, 0x78, 0xdd, 0xf4, 0xaf, 0xed, 0xf7, 0x66, 0x65, 0x70,
-	0x34, 0x18, 0xfd, 0x64, 0xde, 0x1a, 0xa4, 0x9f, 0x39, 0xd2, 0x96, 0x83, 0xe4, 0x33, 0x92, 0xbd,
-	0x33, 0xde, 0xfd, 0x35, 0x6b, 0x75, 0xa2, 0xad, 0x4e, 0x12, 0xab, 0x13, 0x69, 0x75, 0x32, 0xde,
-	0xfd, 0xcd, 0xec, 0x16, 0xb0, 0x3a, 0x39, 0x1c, 0xf5, 0x9f, 0x12, 0x81, 0x5d, 0x2c, 0xf0, 0x1f,
-	0xe6, 0xed, 0x14, 0xd1, 0xeb, 0x69, 0x48, 0xaf, 0x97, 0x60, 0x7a, 0x3d, 0x09, 0xea, 0xf5, 0xc6,
-	0xbb, 0x93, 0x9a, 0x72, 0xfd, 0xe1, 0xdf, 0x01, 0x00, 0x00, 0xff, 0xff, 0x15, 0xd1, 0x15, 0x11,
-	0x9e, 0x0f, 0x00, 0x00,
+	// 1407 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x58, 0x4d, 0x6f, 0x1b, 0x45,
+	0x1f, 0xef, 0x6e, 0x36, 0x8e, 0xfd, 0xb7, 0x9d, 0xb6, 0xd3, 0xb4, 0xcf, 0x3e, 0x55, 0xa5, 0x46,
+	0x5b, 0x3d, 0x6a, 0x9f, 0xe7, 0x41, 0x0e, 0x49, 0x4b, 0x01, 0x4b, 0x15, 0x8a, 0x1d, 0xfa, 0xa2,
+	0xb6, 0x24, 0x6c, 0x4b, 0xa8, 0xa2, 0x88, 0x68, 0xbc, 0x3b, 0xb6, 0x57, 0x5a, 0xcf, 0xac, 0x66,
+	0xc7, 0x69, 0x73, 0xe1, 0xc0, 0x95, 0x13, 0x05, 0x71, 0xe0, 0xc0, 0x81, 0x03, 0x42, 0xdc, 0xf9,
+	0x12, 0xdc, 0xf8, 0x02, 0x3d, 0xf4, 0x08, 0x5f, 0x02, 0xcd, 0xec, 0xab, 0xed, 0x50, 0xed, 0x3a,
+	0x91, 0xe0, 0x62, 0x79, 0xc6, 0xf3, 0xfb, 0xfd, 0xdf, 0x66, 0xfe, 0x2f, 0x86, 0x8b, 0x01, 0x67,
+	0x82, 0xad, 0x05, 0x3e, 0xa6, 0xea, 0xa3, 0xa5, 0xd6, 0xe8, 0x9a, 0xe3, 0xb3, 0xb1, 0x1b, 0x70,
+	0x36, 0x76, 0x5b, 0xfe, 0x98, 0x32, 0xb7, 0xd7, 0x72, 0x18, 0xa5, 0xc4, 0x11, 0x8c, 0xb7, 0xd4,
+	0xb9, 0xc3, 0xf5, 0xcb, 0x2b, 0x03, 0x36, 0x60, 0x11, 0x5e, 0x7e, 0x8b, 0xa0, 0x97, 0x63, 0x46,
+	0xca, 0x5c, 0xa2, 0x3e, 0xe2, 0xed, 0x7f, 0x45, 0xdb, 0xe2, 0x28, 0x20, 0x61, 0xf4, 0x19, 0xfd,
+	0x60, 0xfd, 0xd6, 0x04, 0xe3, 0x23, 0xe6, 0x12, 0xf4, 0x08, 0x96, 0x42, 0x07, 0x53, 0x4a, 0xb8,
+	0xa9, 0xad, 0x6a, 0x37, 0xea, 0x1b, 0x6f, 0xb7, 0x0a, 0x68, 0xd1, 0x7a, 0x12, 0x61, 0x24, 0xc5,
+	0xfd, 0x33, 0x76, 0x42, 0x81, 0x1e, 0x40, 0xc5, 0x61, 0xfe, 0x78, 0x44, 0x4d, 0x5d, 0x91, 0xad,
+	0x15, 0x22, 0xeb, 0x2a, 0x48, 0xcc, 0x15, 0x13, 0x48, 0xaa, 0xbe, 0xe7, 0x0b, 0xc2, 0xcd, 0x85,
+	0x12, 0x54, 0x77, 0x15, 0x24, 0xa1, 0x8a, 0x08, 0xd0, 0x36, 0x54, 0xfb, 0x63, 0xea, 0x08, 0x8f,
+	0x51, 0xd3, 0x50, 0x64, 0xeb, 0xc5, 0xc8, 0x62, 0x50, 0x4c, 0x97, 0x92, 0xa0, 0x67, 0x50, 0xc7,
+	0x83, 0x01, 0x27, 0x03, 0xac, 0x38, 0x17, 0x15, 0xe7, 0xad, 0x42, 0x9c, 0x9b, 0x19, 0x2e, 0xa6,
+	0xcd, 0x53, 0xa1, 0x03, 0x58, 0xc6, 0xd4, 0x3d, 0x20, 0x2f, 0x02, 0x4e, 0xc2, 0x50, 0x92, 0x2f,
+	0x29, 0xf2, 0xdb, 0xc5, 0xc8, 0xa9, 0xfb, 0x61, 0x8a, 0x8c, 0xe9, 0x9b, 0x38, 0xbf, 0x89, 0xf6,
+	0xa1, 0xc9, 0x78, 0x9e, 0xbf, 0xaa, 0xf8, 0xdf, 0x29, 0xc4, 0xbf, 0xcd, 0x67, 0xe8, 0x1b, 0x2c,
+	0xb7, 0x87, 0x04, 0x5c, 0x74, 0xd8, 0x28, 0xc0, 0xdc, 0x0b, 0x19, 0xcd, 0x4b, 0xa9, 0x29, 0x29,
+	0x77, 0x0a, 0x5e, 0x87, 0x84, 0x61, 0x46, 0xda, 0x8a, 0x73, 0xcc, 0x6f, 0x68, 0x08, 0xe7, 0x7b,
+	0x1e, 0xc5, 0xfc, 0x28, 0x2f, 0x11, 0x94, 0xc4, 0xf7, 0x0b, 0x49, 0xec, 0x28, 0xf4, 0x8c, 0xb4,
+	0x73, 0xbd, 0xa9, 0x7d, 0xf4, 0x19, 0x9c, 0x75, 0x70, 0x28, 0xf2, 0x72, 0xea, 0x4a, 0xce, 0xcd,
+	0x62, 0x96, 0xe1, 0x50, 0x64, 0x6c, 0xf7, 0xcf, 0xd8, 0xcb, 0xce, 0xc4, 0x0e, 0xea, 0x29, 0x7e,
+	0x92, 0xe7, 0x6f, 0x28, 0xfe, 0x77, 0x8b, 0xf2, 0x93, 0x19, 0x2b, 0xa4, 0x8c, 0xdc, 0xae, 0x7c,
+	0x0d, 0x0e, 0xa3, 0xa1, 0xc0, 0x54, 0x98, 0xcd, 0x12, 0xaf, 0xa1, 0x1b, 0x83, 0x92, 0xd7, 0x90,
+	0x90, 0xa0, 0xbb, 0xb0, 0x28, 0xc6, 0x81, 0x4f, 0x4c, 0xa4, 0xd8, 0x5a, 0x85, 0xd8, 0x9e, 0x4a,
+	0x44, 0x4c, 0x15, 0xc1, 0xd1, 0x27, 0x50, 0x3d, 0xc4, 0xdc, 0xc3, 0x3d, 0x9f, 0x98, 0x17, 0x4a,
+	0x58, 0xbd, 0x1b, 0x83, 0x26, 0x3c, 0x9b, 0x52, 0xa1, 0xc7, 0x50, 0x65, 0xdc, 0x25, 0xfc, 0xa0,
+	0x77, 0x64, 0xae, 0x94, 0x48, 0x71, 0xdb, 0x12, 0xd4, 0x39, 0x4a, 0x52, 0x1c, 0x8b, 0x96, 0x68,
+	0x1b, 0x2a, 0x87, 0xd8, 0x1f, 0x93, 0xd0, 0xbc, 0x58, 0xe2, 0xe5, 0xec, 0x2a, 0x48, 0xd7, 0xc7,
+	0xe3, 0x30, 0xb1, 0x3a, 0xa6, 0x41, 0x36, 0xd4, 0x02, 0xcc, 0xf1, 0x88, 0xc8, 0x5c, 0xf7, 0x6f,
+	0xc5, 0xb9, 0x51, 0x88, 0x73, 0x27, 0x41, 0xc5, 0x84, 0x19, 0x8d, 0x8c, 0xb1, 0xeb, 0x85, 0xc2,
+	0xa3, 0x8e, 0x30, 0xaf, 0x94, 0x88, 0xf1, 0x56, 0x0c, 0x4a, 0x62, 0x9c, 0x90, 0x48, 0x25, 0x39,
+	0xe9, 0x13, 0x4e, 0xa8, 0x43, 0xcc, 0xab, 0x25, 0x94, 0xb4, 0x13, 0x54, 0xa2, 0x64, 0x4a, 0x23,
+	0xef, 0x8d, 0x72, 0x81, 0xb9, 0x5a, 0xe2, 0xde, 0x28, 0x47, 0x26, 0xf7, 0x46, 0xc1, 0x3b, 0x15,
+	0x30, 0xe4, 0xaf, 0xd6, 0x17, 0x3a, 0x40, 0x56, 0x4a, 0xd0, 0x25, 0xd0, 0x3d, 0x57, 0x15, 0x35,
+	0xa3, 0x53, 0x79, 0xfd, 0xea, 0xaa, 0xfe, 0x60, 0xcb, 0xd6, 0x3d, 0x17, 0x21, 0x30, 0x28, 0x1e,
+	0x11, 0x55, 0xa1, 0x6a, 0xb6, 0xfa, 0x8e, 0x56, 0x60, 0x51, 0xa8, 0x7b, 0xb7, 0xa0, 0x36, 0xa3,
+	0x05, 0xba, 0x04, 0x95, 0xd0, 0x19, 0x92, 0x11, 0x56, 0x55, 0xa3, 0x66, 0xc7, 0x2b, 0x64, 0xc2,
+	0x92, 0x83, 0x05, 0xf6, 0xd9, 0x40, 0xa5, 0xfe, 0x9a, 0x9d, 0x2c, 0xd1, 0x1d, 0x30, 0x64, 0xf5,
+	0x35, 0x2b, 0xca, 0xa2, 0xff, 0x16, 0xb2, 0x48, 0x2a, 0x6b, 0x2b, 0x18, 0xda, 0x84, 0x1a, 0x0b,
+	0x08, 0xc7, 0x82, 0xf1, 0xd0, 0x5c, 0x5a, 0x5d, 0xb8, 0x51, 0xdf, 0xb8, 0x76, 0x0c, 0x87, 0x2a,
+	0xf0, 0xf2, 0x86, 0xc6, 0x67, 0xed, 0x0c, 0x65, 0x7d, 0xa3, 0x43, 0x3d, 0x57, 0x9c, 0xd1, 0xed,
+	0xc4, 0xb2, 0xa8, 0xba, 0xaf, 0xbe, 0x81, 0xee, 0xa9, 0x3c, 0x97, 0xd8, 0xfe, 0x10, 0xea, 0x59,
+	0x12, 0x0a, 0x4d, 0x5d, 0x29, 0x53, 0xc2, 0xa0, 0x3c, 0x5a, 0xba, 0xa5, 0xcf, 0xd9, 0x28, 0xae,
+	0xe4, 0x65, 0xdc, 0x22, 0x61, 0x93, 0x6e, 0x31, 0xe6, 0x72, 0xcb, 0xb7, 0x1a, 0x40, 0xd6, 0x1b,
+	0xa0, 0x07, 0x00, 0x0e, 0xa3, 0xae, 0x27, 0x94, 0x71, 0x5a, 0x59, 0xb5, 0x72, 0xe0, 0xd4, 0x36,
+	0x7d, 0x2e, 0xdb, 0xac, 0x2f, 0x35, 0x68, 0xe4, 0xfb, 0x8c, 0x69, 0xc7, 0x6b, 0x27, 0x72, 0xfc,
+	0x71, 0x77, 0xfd, 0x72, 0x2e, 0x37, 0xc8, 0x80, 0x54, 0xb3, 0x67, 0x6e, 0xfd, 0xa8, 0xc3, 0xd9,
+	0xa9, 0x0e, 0x25, 0x35, 0x50, 0x9b, 0x2f, 0x78, 0x5b, 0x50, 0x1d, 0x70, 0x36, 0x0e, 0x64, 0xfa,
+	0x2d, 0x7d, 0x8b, 0x96, 0x14, 0xb4, 0x73, 0x84, 0x36, 0xa1, 0x32, 0xc4, 0x87, 0x1e, 0x1d, 0x94,
+	0xbf, 0x43, 0x31, 0x70, 0xda, 0xb1, 0xc6, 0x49, 0x1c, 0x6b, 0x7d, 0xad, 0xc1, 0xf9, 0x99, 0x6e,
+	0x4b, 0xba, 0xca, 0x27, 0x7d, 0x31, 0x87, 0xab, 0x24, 0x0c, 0x7d, 0x00, 0x8b, 0xdc, 0x1b, 0x0c,
+	0x45, 0xf9, 0xbb, 0x14, 0xe1, 0xac, 0x97, 0x1a, 0x9c, 0x9b, 0xee, 0xd1, 0xfe, 0x76, 0xa5, 0x5e,
+	0x69, 0xb0, 0x72, 0x5c, 0x83, 0x85, 0xee, 0x42, 0x35, 0x79, 0xa0, 0x4a, 0xb9, 0xe5, 0x8d, 0xff,
+	0xbd, 0xe1, 0x55, 0x47, 0x14, 0x4f, 0x04, 0x16, 0x64, 0x44, 0xa8, 0xb0, 0x53, 0x6c, 0x6a, 0xa0,
+	0x7e, 0x42, 0x03, 0x17, 0xe6, 0x34, 0xf0, 0x2b, 0x0d, 0x96, 0x27, 0x3b, 0x3b, 0x74, 0x0b, 0x0c,
+	0x39, 0x6d, 0xbd, 0x21, 0xe9, 0x46, 0xc3, 0x98, 0xcc, 0xba, 0x47, 0x01, 0xb1, 0xd5, 0x69, 0x99,
+	0x95, 0x72, 0x8d, 0x5f, 0x69, 0x73, 0x72, 0x60, 0xeb, 0x17, 0x1d, 0xcc, 0xbf, 0xea, 0xa3, 0xd1,
+	0xfd, 0x19, 0xc7, 0xbf, 0x55, 0x20, 0x9d, 0xfe, 0x03, 0x5d, 0x8f, 0xb6, 0xa1, 0x11, 0x8e, 0x7b,
+	0x07, 0xa9, 0x35, 0xc6, 0x1c, 0xd6, 0xd4, 0xc3, 0x71, 0x2f, 0xd9, 0xb5, 0xfe, 0xd0, 0x00, 0xcd,
+	0x76, 0xd1, 0x53, 0x91, 0xd1, 0x4e, 0x10, 0x19, 0xf4, 0x10, 0x8c, 0xe7, 0x43, 0x42, 0xe3, 0x5c,
+	0x58, 0xac, 0xc3, 0xfd, 0x74, 0x48, 0xa6, 0x62, 0x68, 0x2b, 0x12, 0xe9, 0x7f, 0xe2, 0x87, 0x64,
+	0x8e, 0xc2, 0x2a, 0x61, 0xd6, 0xf7, 0x1a, 0xa0, 0x59, 0x6e, 0x74, 0x0f, 0x6a, 0x69, 0x81, 0x2b,
+	0x6f, 0x6c, 0x86, 0x95, 0xf1, 0x8d, 0x3a, 0xbc, 0xf2, 0xb9, 0x43, 0xe1, 0xac, 0x3d, 0x68, 0xe4,
+	0xc7, 0x8e, 0x39, 0xdf, 0xd5, 0x4a, 0x5e, 0x8d, 0x46, 0xc2, 0xfd, 0x93, 0x06, 0xf5, 0x5c, 0x8f,
+	0x7f, 0xd2, 0x3a, 0xb7, 0x77, 0x5c, 0xc3, 0xf4, 0x5e, 0xf1, 0x49, 0x63, 0x2a, 0xbe, 0x13, 0xd5,
+	0xe6, 0x73, 0xb8, 0x70, 0xcc, 0x19, 0x74, 0x05, 0x6a, 0xae, 0xc7, 0x89, 0x93, 0xc6, 0xa9, 0x69,
+	0x67, 0x1b, 0xa7, 0x99, 0x4d, 0x9e, 0x41, 0x2d, 0x9d, 0xd7, 0x4e, 0xb5, 0x41, 0xb1, 0x7a, 0x80,
+	0x66, 0xc7, 0x37, 0xd9, 0x78, 0xb3, 0x7e, 0x3f, 0x24, 0x51, 0xd1, 0x32, 0xec, 0x78, 0x95, 0x86,
+	0x5f, 0x2f, 0x13, 0x7e, 0xeb, 0x19, 0x9c, 0x9b, 0x1e, 0xbf, 0xd0, 0x16, 0x18, 0x9c, 0x3d, 0x4f,
+	0xb4, 0x2f, 0x36, 0x10, 0x66, 0x0a, 0x86, 0xb6, 0x42, 0x5b, 0x7b, 0x50, 0xcf, 0x6d, 0x9e, 0xae,
+	0x67, 0xfe, 0x03, 0xcd, 0x89, 0x01, 0x4f, 0xde, 0x62, 0x8f, 0xba, 0xe4, 0x45, 0x1c, 0xe9, 0x68,
+	0x61, 0x7d, 0xa7, 0x41, 0x23, 0x3f, 0xb5, 0x9d, 0xf4, 0x1a, 0x9f, 0x66, 0xdf, 0x6f, 0x7d, 0x0c,
+	0x60, 0x13, 0x87, 0x71, 0x57, 0x69, 0xd6, 0x85, 0xa5, 0xe8, 0xbf, 0xbd, 0x39, 0x5c, 0x93, 0x20,
+	0x2d, 0x17, 0x9a, 0x13, 0x23, 0xa5, 0x74, 0x4b, 0x80, 0xb9, 0x88, 0x38, 0x6b, 0x76, 0xb4, 0x48,
+	0x07, 0x31, 0x7d, 0xae, 0x41, 0xcc, 0xda, 0x84, 0x5a, 0x3a, 0x68, 0xce, 0x97, 0x74, 0x3a, 0x2f,
+	0x75, 0xb8, 0xee, 0xb0, 0x51, 0x11, 0xc9, 0x9d, 0xda, 0x8e, 0x8f, 0xe9, 0x0e, 0x67, 0x82, 0xed,
+	0x68, 0x7b, 0xff, 0x1f, 0x78, 0x62, 0x38, 0x96, 0xc7, 0x46, 0x6b, 0x19, 0x78, 0x2d, 0x06, 0xe3,
+	0xc0, 0x5b, 0xcb, 0xfe, 0x3d, 0xfe, 0x41, 0x37, 0xba, 0x8f, 0xba, 0x3b, 0x3f, 0xeb, 0xd7, 0xba,
+	0x99, 0x98, 0x47, 0xd1, 0xc9, 0x6e, 0x2a, 0x46, 0xb2, 0xb7, 0x76, 0xd7, 0x7f, 0xcd, 0x9f, 0xda,
+	0x8f, 0x4e, 0xed, 0xa7, 0xa7, 0xf6, 0xe5, 0xa9, 0xfd, 0xdd, 0xf5, 0xd7, 0xfa, 0x5a, 0x81, 0x53,
+	0xfb, 0xf7, 0x76, 0x3a, 0x8f, 0x89, 0xc0, 0x2e, 0x16, 0xf8, 0x77, 0xfd, 0x7a, 0x86, 0x68, 0xb7,
+	0x23, 0x48, 0xbb, 0x9d, 0x62, 0xda, 0x6d, 0x09, 0x6a, 0xb7, 0x77, 0xd7, 0x7b, 0x15, 0xa5, 0xfa,
+	0xcd, 0x3f, 0x03, 0x00, 0x00, 0xff, 0xff, 0xba, 0x81, 0x07, 0x2b, 0x01, 0x17, 0x00, 0x00,
 }
