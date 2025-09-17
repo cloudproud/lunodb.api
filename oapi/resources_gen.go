@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -29,6 +30,16 @@ const (
 	Integer  ConnectorOptionType = "integer"
 	Password ConnectorOptionType = "password"
 	String   ConnectorOptionType = "string"
+)
+
+// Defines values for SourceRefType.
+const (
+	SourceRefTypeSource SourceRefType = "source"
+)
+
+// Defines values for SystemRefType.
+const (
+	System SystemRefType = "system"
 )
 
 // Defines values for QueryParamsLimit.
@@ -219,13 +230,27 @@ type SourceOptions map[string]string
 
 // SourceRef defines model for SourceRef.
 type SourceRef struct {
-	Id    string   `json:"id"`
-	Name  string   `json:"name"`
-	Table TableRef `json:"table"`
+	Id    string        `json:"id"`
+	Name  string        `json:"name"`
+	Table TableRef      `json:"table"`
+	Type  SourceRefType `json:"type"`
 }
+
+// SourceRefType defines model for SourceRef.Type.
+type SourceRefType string
 
 // Sources defines model for Sources.
 type Sources = []Source
+
+// SystemRef defines model for SystemRef.
+type SystemRef struct {
+	Name  string        `json:"name"`
+	Table TableRef      `json:"table"`
+	Type  SystemRefType `json:"type"`
+}
+
+// SystemRefType defines model for SystemRef.Type.
+type SystemRefType string
 
 // Table defines model for Table.
 type Table struct {
@@ -313,6 +338,7 @@ func (t Table_Ref) AsSourceRef() (SourceRef, error) {
 
 // FromSourceRef overwrites any union data inside the Table_Ref as the provided SourceRef
 func (t *Table_Ref) FromSourceRef(v SourceRef) error {
+	v.Type = "source"
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
@@ -320,6 +346,7 @@ func (t *Table_Ref) FromSourceRef(v SourceRef) error {
 
 // MergeSourceRef performs a merge with any union data inside the Table_Ref, using the provided SourceRef
 func (t *Table_Ref) MergeSourceRef(v SourceRef) error {
+	v.Type = "source"
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -330,22 +357,24 @@ func (t *Table_Ref) MergeSourceRef(v SourceRef) error {
 	return err
 }
 
-// AsTableRef returns the union data inside the Table_Ref as a TableRef
-func (t Table_Ref) AsTableRef() (TableRef, error) {
-	var body TableRef
+// AsSystemRef returns the union data inside the Table_Ref as a SystemRef
+func (t Table_Ref) AsSystemRef() (SystemRef, error) {
+	var body SystemRef
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
-// FromTableRef overwrites any union data inside the Table_Ref as the provided TableRef
-func (t *Table_Ref) FromTableRef(v TableRef) error {
+// FromSystemRef overwrites any union data inside the Table_Ref as the provided SystemRef
+func (t *Table_Ref) FromSystemRef(v SystemRef) error {
+	v.Type = "system"
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
-// MergeTableRef performs a merge with any union data inside the Table_Ref, using the provided TableRef
-func (t *Table_Ref) MergeTableRef(v TableRef) error {
+// MergeSystemRef performs a merge with any union data inside the Table_Ref, using the provided SystemRef
+func (t *Table_Ref) MergeSystemRef(v SystemRef) error {
+	v.Type = "system"
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
@@ -354,6 +383,29 @@ func (t *Table_Ref) MergeTableRef(v TableRef) error {
 	merged, err := runtime.JSONMerge(t.union, b)
 	t.union = merged
 	return err
+}
+
+func (t Table_Ref) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"type"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t Table_Ref) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "source":
+		return t.AsSourceRef()
+	case "system":
+		return t.AsSystemRef()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
 }
 
 func (t Table_Ref) MarshalJSON() ([]byte, error) {

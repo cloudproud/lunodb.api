@@ -1126,7 +1126,12 @@ components:
         ref:
           oneOf:
             - $ref: "#/components/schemas/SourceRef"
-            - $ref: "#/components/schemas/TableRef"
+            - $ref: "#/components/schemas/SystemRef"
+          discriminator:
+            propertyName: type
+            mapping:
+              source: "#/components/schemas/SourceRef"
+              system: "#/components/schemas/SystemRef"
         name:
           type: string
           example: invoices
@@ -1146,10 +1151,14 @@ components:
     SourceRef:
       type: object
       required:
+        - type
         - id
         - name
         - table
       properties:
+        type:
+          type: string
+          enum: [source]
         id:
           type: string
         name:
@@ -1159,9 +1168,13 @@ components:
     SystemRef:
       type: object
       required:
+        - type
         - name
         - table
       properties:
+        type:
+          type: string
+          enum: [system]
         name:
           type: string
         table:
