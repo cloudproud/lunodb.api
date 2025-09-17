@@ -955,7 +955,7 @@ components:
         - schema
       properties:
         ref:
-          $ref: "#/components/schemas/SourceRef"
+          $ref: "#/components/schemas/CreateSourceRef"
         name:
           type: string
           description: the table name referenced within SQL queries
@@ -963,7 +963,7 @@ components:
           type: string
           default: public
           description: the table schema referenced within SQL queries
-    SourceRef:
+    CreateSourceRef:
       type: object
       required:
         - name
@@ -973,19 +973,6 @@ components:
           type: string
         table:
           $ref: "#/components/schemas/TableRef"
-    TableRef:
-      type: object
-      required:
-        - name
-        - schema
-      properties:
-        name:
-          type: string
-          description: the table name referenced within SQL queries
-        schema:
-          type: string
-          default: public
-          description: the table schema referenced within SQL queries
     CustomConnector:
       type: object
       required:
@@ -1128,6 +1115,7 @@ components:
     Table:
       type: object
       required:
+        - ref
         - name
         - connector
         - schema
@@ -1135,6 +1123,10 @@ components:
         - columns
         - type
       properties:
+        ref:
+          oneOf:
+            - $ref: "#/components/schemas/SourceRef"
+            - $ref: "#/components/schemas/TableRef"
         name:
           type: string
           example: invoices
@@ -1151,6 +1143,42 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Column"
+    SourceRef:
+      type: object
+      required:
+        - id
+        - name
+        - table
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        table:
+          $ref: "#/components/schemas/TableRef"
+    SystemRef:
+      type: object
+      required:
+        - name
+        - table
+      properties:
+        name:
+          type: string
+        table:
+          $ref: "#/components/schemas/TableRef"
+    TableRef:
+      type: object
+      required:
+        - name
+        - schema
+      properties:
+        name:
+          type: string
+          description: the table name referenced within SQL queries
+        schema:
+          type: string
+          default: public
+          description: the table schema referenced within SQL queries
     Keys:
       type: array
       items:

@@ -51,8 +51,8 @@ type Catalog struct {
 // CatalogTable defines model for CatalogTable.
 type CatalogTable struct {
 	// Name the table name referenced within SQL queries
-	Name string    `json:"name"`
-	Ref  SourceRef `json:"ref"`
+	Name string          `json:"name"`
+	Ref  CreateSourceRef `json:"ref"`
 
 	// Schema the table schema referenced within SQL queries
 	Schema string `json:"schema"`
@@ -92,6 +92,12 @@ type ConnectorOptionType string
 
 // Connectors defines model for Connectors.
 type Connectors = []Connector
+
+// CreateSourceRef defines model for CreateSourceRef.
+type CreateSourceRef struct {
+	Name  string   `json:"name"`
+	Table TableRef `json:"table"`
+}
 
 // CustomConnector defines model for CustomConnector.
 type CustomConnector struct {
@@ -213,6 +219,7 @@ type SourceOptions map[string]string
 
 // SourceRef defines model for SourceRef.
 type SourceRef struct {
+	Id    string   `json:"id"`
 	Name  string   `json:"name"`
 	Table TableRef `json:"table"`
 }
@@ -222,11 +229,17 @@ type Sources = []Source
 
 // Table defines model for Table.
 type Table struct {
-	Columns    []Column `json:"columns"`
-	Connector  string   `json:"connector"`
-	Name       string   `json:"name"`
-	Schema     string   `json:"schema"`
-	Schemaless bool     `json:"schemaless"`
+	Columns    []Column  `json:"columns"`
+	Connector  string    `json:"connector"`
+	Name       string    `json:"name"`
+	Ref        Table_Ref `json:"ref"`
+	Schema     string    `json:"schema"`
+	Schemaless bool      `json:"schemaless"`
+}
+
+// Table_Ref defines model for Table.Ref.
+type Table_Ref struct {
+	union json.RawMessage
 }
 
 // TableRef defines model for TableRef.
@@ -290,6 +303,68 @@ type TestSourceConnectionJSONRequestBody = NewSource
 
 // UpdateSourceJSONRequestBody defines body for UpdateSource for application/json ContentType.
 type UpdateSourceJSONRequestBody = UpdateSource
+
+// AsSourceRef returns the union data inside the Table_Ref as a SourceRef
+func (t Table_Ref) AsSourceRef() (SourceRef, error) {
+	var body SourceRef
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromSourceRef overwrites any union data inside the Table_Ref as the provided SourceRef
+func (t *Table_Ref) FromSourceRef(v SourceRef) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeSourceRef performs a merge with any union data inside the Table_Ref, using the provided SourceRef
+func (t *Table_Ref) MergeSourceRef(v SourceRef) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsTableRef returns the union data inside the Table_Ref as a TableRef
+func (t Table_Ref) AsTableRef() (TableRef, error) {
+	var body TableRef
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromTableRef overwrites any union data inside the Table_Ref as the provided TableRef
+func (t *Table_Ref) FromTableRef(v TableRef) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeTableRef performs a merge with any union data inside the Table_Ref, using the provided TableRef
+func (t *Table_Ref) MergeTableRef(v TableRef) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t Table_Ref) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *Table_Ref) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
 
 // RequestEditorFn  is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
